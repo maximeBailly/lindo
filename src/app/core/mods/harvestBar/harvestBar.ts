@@ -3,6 +3,7 @@ export class HarvestBar {
     private wGame: any | Window;
     private container: HTMLDivElement;
     private harvestBar: HTMLDivElement;
+    private harvestTimeText: HTMLDivElement;
     private updateInterval: any;
     private interval: number = 200;
 
@@ -37,6 +38,15 @@ export class HarvestBar {
         this.container.style.left = (pos.x - this.container.offsetWidth / 2) + 'px';
         this.container.style.top = (pos.y) + 'px';
 
+        /* harvestTimeText */
+        this.harvestTimeText = document.createElement('div');
+        this.harvestTimeText.id = 'harvestTime';
+        this.harvestTimeText.className = 'harvestTimeText';
+        this.wGame.foreground.rootElement.appendChild(this.harvestTimeText);
+
+        this.harvestTimeText.style.left = (pos.x - this.container.offsetWidth / 2) + 'px';
+        this.harvestTimeText.style.top = (pos.y) + 'px';
+
         this.update();
     }
 
@@ -51,11 +61,15 @@ export class HarvestBar {
     }
 
     private update() {
-         let time: number = this.remainingTime / this.duration * 100;
-         this.harvestBar.style.width = (time > 0 ? time : '0') + '%';
+        /* Harvest Bar */
+        let time: number = this.remainingTime / this.duration * 100;
+        this.harvestBar.style.width = (time > 0 ? time : '0') + '%';
+
+        /* Harvest Text */
+        this.harvestTimeText.innerHTML = (this.remainingTime > 0 ? (this.remainingTime / 1000) : '0') + 's';
     }
 
-    public harvestStarted(cellId: number, duration: number, skillId: number) {
+    public harvestStarted(cellId: number, duration: number) {
         this.cellId = cellId;
         this.duration = duration * 100;
         this.remainingTime = duration * 100;
@@ -66,6 +80,7 @@ export class HarvestBar {
         setTimeout(() => {
             clearInterval(this.updateInterval);
             if (this.container && this.container.parentElement) this.container.parentElement.removeChild(this.container);
+            if (this.harvestTimeText && this.harvestTimeText.parentElement) this.harvestTimeText.parentElement.removeChild(this.harvestTimeText);
         }, this.interval);
     }
 }

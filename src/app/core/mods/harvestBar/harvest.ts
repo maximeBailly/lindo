@@ -6,7 +6,6 @@ import { HarvestBar } from "./harvestBar";
 export class Harvest extends Mod {
     private harvestBar: HarvestBar;
     private statedElements: Map<number, number> = new Map();
-    private actorId: number;
 
     startMod(): void {
         this.params = this.settings.option.vip.general;
@@ -39,14 +38,15 @@ export class Harvest extends Mod {
             }
 
             .harvestTimeText {
-                font-size: 12px;
+                font-size: 11px;
+                font-weight: bold;
+                text-align: center;
                 position: absolute;
                 width: 80px;
                 color: white;
                 text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.9);
                 transition-duration: 500ms;
-                margin-top: 16px;
-                margin-left: 2px;
+                margin-top: 4px;
             }`;
             this.wGame.document.getElementsByTagName('head')[0].appendChild(harvestCss);
 
@@ -72,7 +72,7 @@ export class Harvest extends Mod {
         this.on(this.wGame.dofus.connectionManager, 'InteractiveUsedMessage', (e: any) => {
             try {
                 if (this.statedElements.has(e.elemId) && e.entityId == this.wGame.isoEngine.actorManager.userId) {
-                    this.harvestBar.harvestStarted(this.statedElements.get(e.elemId), e.duration, e.skillId);
+                    this.harvestBar.harvestStarted(this.statedElements.get(e.elemId), e.duration);
                     this.statedElements.clear();
                 }
             } catch (ex) {
