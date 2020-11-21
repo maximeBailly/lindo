@@ -31,7 +31,6 @@ export class Notifications extends Mod {
             this.sendAggressionNotif(e);
         });
         this.on(this.wGame.dofus.connectionManager, 'TextInformationMessage', (e: any) => {
-            console.log("Notif HDV", e);
             this.sendHdvSaleNotif(e);
         });
     }
