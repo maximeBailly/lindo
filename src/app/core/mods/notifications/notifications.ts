@@ -30,6 +30,29 @@ export class Notifications extends Mod {
         this.on(this.wGame.dofus.connectionManager, 'GameRolePlayAggressionMessage', (e: any) => {
             this.sendAggressionNotif(e);
         });
+        this.on(this.wGame.dofus.connectionManager, 'TextInformationMessage', (e: any) => {
+            console.log("Notif HDV", e);
+            this.sendHdvSaleNotif(e);
+        });
+    }
+
+    private async sendHdvSaleNotif(e: any) {
+        if (!this.wGame.document.hasFocus() && this.params.sale_message) {
+            if (e.msgId == 65) {
+
+                this.eventEmitter.emit('newNotification');
+
+                let saleNotif = new Notification(this.translate.instant('app.notifications.sale-message'), {
+                    body: '+' + e.parameters[0] + ' kamas'
+                });
+
+                saleNotif.onclick = () => {
+                    electron.getCurrentWindow().focus();
+                    this.eventEmitter.emit('focusTab');
+                }
+            }
+        }
+
     }
 
     private sendMPNotif(msg: any) {

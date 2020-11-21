@@ -1,4 +1,5 @@
 import { Logger } from "app/core/electron/logger.helper";
+import { time } from "console";
 
 import { Mod } from "../mod";
 import { HarvestBar } from "./harvestBar";
@@ -6,6 +7,7 @@ import { HarvestBar } from "./harvestBar";
 export class Harvest extends Mod {
     private harvestBar: HarvestBar;
     private statedElements: Map<number, number> = new Map();
+    private isInHarvest: boolean = false;
 
     startMod(): void {
         this.params = this.settings.option.vip.general;
@@ -14,7 +16,7 @@ export class Harvest extends Mod {
 
             Logger.info('- enable Harvest indicator');
 
-            let harvestCss = document.createElement('style');
+            const harvestCss = document.createElement('style');
             harvestCss.id = 'harvestCss';
             harvestCss.innerHTML = `
             .harvestBarContainer {
@@ -73,6 +75,7 @@ export class Harvest extends Mod {
             try {
                 if (this.statedElements.has(e.elemId) && e.entityId == this.wGame.isoEngine.actorManager.userId) {
                     this.harvestBar.harvestStarted(this.statedElements.get(e.elemId), e.duration);
+                    this.isInHarvest = true;
                     this.statedElements.clear();
                 }
             } catch (ex) {
@@ -84,7 +87,7 @@ export class Harvest extends Mod {
     private removeOnFinish(): void {
         this.on(this.wGame.dofus.connectionManager, 'InteractiveUseEndedMessage', (e: any) => {
             try {
-                this.harvestBar.destroy();
+                this.isInHarvest = !(this.harvestBar.destroy());
             } catch (ex) {
                 Logger.info(ex);
             }
@@ -96,7 +99,11 @@ export class Harvest extends Mod {
         super.reset();
         if (this.params.harvest_indicator) {
             if (this.harvestBar) this.harvestBar.destroy();
-            let harvestCss = this.wGame.document.getElementById('harvestCss');
+            const bar = this.wGame.document.getElementById('harvestBarContainer');
+            if (bar) bar.remove();
+            const time = this.wGame.document.getElementById('harvestTime');
+            if (time) time.remove();
+            const harvestCss = this.wGame.document.getElementById('harvestCss');
             if (harvestCss && harvestCss.parentElement) harvestCss.parentElement.removeChild(harvestCss);
         }
     }

@@ -76,11 +76,11 @@ export class HarvestBar {
         this.show();
     }
 
-    public destroy() {
-        setTimeout(() => {
-            clearInterval(this.updateInterval);
-            if (this.container && this.container.parentElement) this.container.parentElement.removeChild(this.container);
-            if (this.harvestTimeText && this.harvestTimeText.parentElement) this.harvestTimeText.parentElement.removeChild(this.harvestTimeText);
-        }, this.interval);
+    public destroy(): boolean {
+        clearInterval(this.updateInterval);
+        if (this.container && this.container.parentElement) this.container.parentElement.removeChild(this.container);
+        if (this.harvestTimeText && this.harvestTimeText.parentElement) this.harvestTimeText.parentElement.removeChild(this.harvestTimeText);
+
+        return true;
     }
 }
