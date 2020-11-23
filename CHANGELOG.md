@@ -1,6 +1,13 @@
 ## ⚠ ATTENTION, VÉRIFIEZ QUE VOUS TÉLÉCHARGEZ LINDO DEPUIS LINDO.NO-EMU.CO
 ## ⚠ CERTAINS SITES MALVEILLANTS INSTALLERONT UN VIRUS SUR VOTRE ORDINATEUR
 
+## [2.5.3] - 2020-11-22
+
+### Ajouts
+
+ - Ajout d'une notification lors de la vente d'un item
+ - Ajout d'une barre de temps de récolte lors de l'intéraction avec celle-ci
+
 ## [2.5.2] - 2020-11-14
 
 ### Améliorations
