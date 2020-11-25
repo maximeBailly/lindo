@@ -4,16 +4,17 @@ import { Mod } from "../mod";
 export class AutoHarvest extends Mod {
     private readonly STATE_USE: number = 2;
 
-    private waitingInteractives: Map<number, InteractiveElement> = new Map();
-    private usedInteractives: Map<number, InteractiveElement> = new Map();
+    private identifiedElements: any;
+    private waitingInteractives: Array<InteractiveElement> = new Array();
+    private usedInteractive: InteractiveElement;
     private skillsToUse: number[] = [];
 
     private checkInterval: any;
     private delayedUseInteractive: ReturnType<typeof setTimeout>;
-    private refresh: number = 3000;
-    private isInHarvest: {status: boolean, startTime: number, elemId: number} = {status: false, startTime: -1, elemId: 0}; // add elemId
+    private isInHarvest: {status: boolean, startTime: number, elemId: number} = {status: false, startTime: -1, elemId: 0};
     private maxWeightInPercent: number = 95;
     private weightLimitReached: boolean = false;
+    private isLoading: boolean = false;
 
     startMod(): void {
         this.params = this.settings.option.vip.general;
@@ -46,14 +47,16 @@ export class AutoHarvest extends Mod {
             }
 
             // Triggers the use of interactive
-            if (this.waitingInteractives.size > 0 && this.checkAllCondition()) {
+            if (this.waitingInteractives.length > 0 && !this.isLoading && this.checkAllCondition()) {
 
-                let interactive: InteractiveElement = this.waitingInteractives.entries().next().value[1];
+                let interactive: InteractiveElement = this.waitingInteractives.shift();
                 this.useInteractiveElement(interactive);
-                this.usedInteractives.set(interactive.elementId, interactive);
-                this.waitingInteractives.delete(interactive.elementId);
+                this.usedInteractive = interactive;
+
+                this.isLoading = true;
+                setTimeout(() => this.sortByEstimateDistance(), 200);
             }
-        }, this.refresh);
+        }, 2500);
     }
 
     // TODO Move in autoHarvest gestionnaire
@@ -68,9 +71,9 @@ export class AutoHarvest extends Mod {
                 }
             });
         });
+        console.log('SkillsToUse : ', this.skillsToUse);
     }
 
-    // TODO Check with wgame if interactive already use
     private useInteractiveElement(interactive: InteractiveElement) {
         if (!this.isInHarvest.status) {
             this.isInHarvest = {status: true, startTime: new Date().getTime(), elemId: interactive.elementId};
@@ -78,40 +81,63 @@ export class AutoHarvest extends Mod {
             this.delayedUseInteractive = setTimeout(() => {
                 console.log('UseInteractive -> elementId : ', interactive.elementId);
                 this.wGame.isoEngine.queueUseInteractive(interactive.elementId, interactive.skillInstanceUid);   
-            }, this.getRandomTime(2,4));
+            }, this.getRandomTime(1,2));
         }
     }
 
     private addInteractiveToWaitingList(interactiveElement: any) {
 
         if ((interactiveElement.enabledSkills != null && interactiveElement.enabledSkills.length > 0)
-            && (!this.waitingInteractives.has(interactiveElement.elementId) || !this.usedInteractives.has(interactiveElement.elementId))) {
+            && (!this.waitingInteractives.find(a => a.elementId == interactiveElement.elementId) || !(this.usedInteractive.elementId == interactiveElement.elementId))) {
 
+            const element = this.identifiedElements[interactiveElement.elementId];
+            
             const interactive: InteractiveElement = {elementId: interactiveElement.elementId,
-                                                   elementTypeId: interactiveElement.elementTypeId,
-                                                   skillId: interactiveElement.enabledSkills[0].skillId,
-                                                   skillInstanceUid: interactiveElement.enabledSkills[0].skillInstanceUid}
+                                                    elementTypeId: interactiveElement.elementTypeId,
+                                                    skillId: interactiveElement.enabledSkills[0].skillId,
+                                                    skillInstanceUid: interactiveElement.enabledSkills[0].skillInstanceUid,
+                                                    posX: element.x ? element.x : -1,
+                                                    posY: element.y ? element.y : -1}
 
             if (this.skillsToUse.includes(interactive.skillId)) {
-                this.waitingInteractives.set(interactiveElement.elementId, interactive);
-                console.log('Add interactive : ', this.waitingInteractives);
+                this.waitingInteractives.push(interactive);
+                console.log('Add interactive : ', interactive.elementId);
             }
         }
     }
 
     private deleteUseInteractiveAtEnd(elemId: number) {
-        if (this.usedInteractives.has(elemId)) {
-            console.log('Delete interactive : ', elemId);
-            this.usedInteractives.delete(elemId);
+        if (this.usedInteractive != null && this.usedInteractive.elementId == elemId) {
+            console.log('Delete usedInteractive : ', elemId);
+            this.usedInteractive = null;
             this.isInHarvest = {status: false, startTime: -1, elemId: 0};
         }
     }
 
     private loadInteractiveList(interactiveElements: any) {
-        this.clear();
-        interactiveElements.forEach((interactiveElement) => {
-            this.addInteractiveToWaitingList(interactiveElement);
-        });
+        this.isLoading = true;
+        setTimeout(() => {
+            this.identifiedElements = this.wGame.isoEngine.mapRenderer.identifiedElements;
+
+            this.clear();
+            interactiveElements.forEach((interactiveElement) => {
+                this.addInteractiveToWaitingList(interactiveElement);
+            });
+
+            if (this.waitingInteractives.length > 0) setTimeout(() => this.sortByEstimateDistance(), 200);
+        }, 500);
+    }
+
+    private async sortByEstimateDistance() {
+console.log('SortWaitingInteractives...');
+        const actorPosX: number = this.wGame.isoEngine.actorManager.userActor.x;
+        const actorPosY: number = this.wGame.isoEngine.actorManager.userActor.y;
+
+        this.waitingInteractives.sort((a, b) => 
+            Math.ceil(Math.sqrt(Math.pow(a.posX - actorPosX, 2) + Math.pow(a.posY - actorPosY, 2)))
+            - Math.ceil(Math.sqrt(Math.pow(b.posX - actorPosX, 2) + Math.pow(b.posY - actorPosY, 2)))
+        );
+        this.isLoading = false;
     }
 
     private checkAllCondition(): boolean {
@@ -125,9 +151,9 @@ export class AutoHarvest extends Mod {
 
     private onStatedElementUpdatedMessage() {
         this.on(this.wGame.dofus.connectionManager, 'StatedElementUpdatedMessage', (e: any) => {
-            if (this.waitingInteractives.has(e.statedElement.elementId) && e.statedElement.elementState == this.STATE_USE) {
+            if (this.waitingInteractives.find(a => a.elementId == e.statedElement.elementId) && e.statedElement.elementState == this.STATE_USE) {
                 console.log('StatedElementUpdatedMessage -> Remove element ' + e.statedElement.elementId + ' already used...');
-                this.waitingInteractives.delete(e.statedElement.elementId);
+                this.deleteWaitingInteractive(e.statedElement.elementId);
             }
         });
     }
@@ -157,19 +183,27 @@ export class AutoHarvest extends Mod {
     }
 
 
-    /* Clear and reset function */
+    /* Utils function */
+
+    private deleteWaitingInteractive(elementId: number) {
+        const elementToRemove: InteractiveElement = this.waitingInteractives.find(e => e.elementId == elementId);
+        const index: number = this.waitingInteractives.indexOf(elementToRemove, 0);
+        if (index > -1) {
+            this.waitingInteractives.slice(index, 1);
+            console.log('Delete waitingInteractive : ' + elementId);
+        }
+    }
 
     private clear() {
-        this.waitingInteractives.clear();
-        this.usedInteractives.clear();
+        this.waitingInteractives = [];
+        this.usedInteractive = null;
         if (this.delayedUseInteractive) clearTimeout(this.delayedUseInteractive);
         this.isInHarvest = {status: false, startTime: -1, elemId: 0};
-        console.log('Clear all data');
     }
 
     public reset() {
         super.reset();
-        this.checkInterval.unref();
+        clearInterval(this.checkInterval);
     }
     
 }
@@ -178,4 +212,6 @@ export interface InteractiveElement {
     elementTypeId: number;
     skillId: number;
     skillInstanceUid: number;
+    posX?: number;
+    posY?: number;
 }
