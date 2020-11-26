@@ -46,6 +46,8 @@ export class AutoHarvest extends Mod {
                 console.log('Force "isInHarvest" reinitialization -> ', this.isInHarvest);
             }
 
+            console.log('isLoading : ', this.isLoading);
+
             // Triggers the use of interactive
             if (this.waitingInteractives.length > 0 && !this.isLoading && this.checkAllCondition()) {
 
@@ -53,8 +55,10 @@ export class AutoHarvest extends Mod {
                 this.useInteractiveElement(interactive);
                 this.usedInteractive = interactive;
 
-                this.isLoading = true;
-                setTimeout(() => this.sortByEstimateDistance(), 200);
+                if (this.waitingInteractives.length > 1) {
+                    this.isLoading = true;
+                    setTimeout(() => this.sortByEstimateDistance(), 200);
+                }
             }
         }, 2500);
     }
@@ -124,7 +128,8 @@ export class AutoHarvest extends Mod {
                 this.addInteractiveToWaitingList(interactiveElement);
             });
 
-            if (this.waitingInteractives.length > 0) setTimeout(() => this.sortByEstimateDistance(), 200);
+            if (this.waitingInteractives.length > 1) setTimeout(() => this.sortByEstimateDistance(), 200);
+            else this.isLoading = false;
         }, 500);
     }
 
@@ -185,6 +190,7 @@ console.log('SortWaitingInteractives...');
 
     /* Utils function */
 
+    // FIXME Check if element is realy delete when is call by an other user interact with element 
     private deleteWaitingInteractive(elementId: number) {
         const elementToRemove: InteractiveElement = this.waitingInteractives.find(e => e.elementId == elementId);
         const index: number = this.waitingInteractives.indexOf(elementToRemove, 0);
