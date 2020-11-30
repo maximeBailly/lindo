@@ -69,7 +69,9 @@
             "hide-mount": "Hide mounts during fights",
             "fightchronometer" : "Show combats chronometer",
             "zaapsearchfilter" : "Show zaap search filter",
-            "harvest-indicator" : "Activate the display of the remaining time below the ressources"
+            "harvest-indicator" : "Activate the display of the remaining time below the ressources",
+            "monster-tooltip": "Display monsters groups informations on the map",
+            "monster-tooltip-shortcut": "Shortcut for show/hide monsters tooltip"
           },
           "groups": {
             "header": "Groups"
@@ -215,6 +217,10 @@
         },
         "jobsxp": {
           "text": " XP missing<br>before level "
+        },
+        "monstertooltip": {
+          "level": "Level",
+          "group": "Group"
         }
       },
       "general": {
