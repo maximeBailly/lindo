@@ -141,7 +141,11 @@ export class MonsterTooltip extends Mod {
         tooltip += `</div>`;
 
         for (const monster of this.getReduceAndSortMonsters(data.monsters)) {
-            tooltip += `<div>${monster.name} (${monster.level}) ` + (monster.quantity > 1 ? `x${monster.quantity}` : '') + `</div>`;
+            if (monster.isBoss) {
+                tooltip += `<div style="color: #A69FFF;">${monster.name} (${monster.level})</div>`
+            } else {
+                tooltip += `<div>${monster.name} (${monster.level}) ` + (monster.quantity > 1 ? `x${monster.quantity}` : '') + `</div>`;
+            }
         }
 
         tooltip += `</div></div></div></div>`;
@@ -153,7 +157,7 @@ export class MonsterTooltip extends Mod {
         const result: Monster[] = new Array();
 
         monsters.forEach(monster => {
-            const m: Monster = {name: monster.staticInfos.nameId, level: monster.staticInfos.level, quantity: 1};
+            const m: Monster = {name: monster.staticInfos.nameId, level: monster.staticInfos.level, quantity: 1, isBoss: monster.staticInfos.isBoss};
             const monsterFind: Monster = result.find(r => r.name === m.name && r.level === m.level);
 
             if (monsterFind != null) monsterFind.quantity += 1;
@@ -332,4 +336,5 @@ export interface Monster {
     name: string;
     level: number;
     quantity: number;
+    isBoss: boolean;
 }
