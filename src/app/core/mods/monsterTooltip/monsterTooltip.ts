@@ -141,7 +141,11 @@ export class MonsterTooltip extends Mod {
         tooltip += `</div>`;
 
         for (const monster of this.getReduceAndSortMonsters(data.monsters)) {
-            tooltip += `<div>${monster.name} (${monster.level}) ` + (monster.quantity > 1 ? `x${monster.quantity}` : '') + `</div>`;
+            if (monster.isBoss) {
+                tooltip += `<div style="color: #A69FFF;">${monster.name} (${monster.level})</div>`
+            } else {
+                tooltip += `<div>${monster.name} (${monster.level}) ` + (monster.quantity > 1 ? `x${monster.quantity}` : '') + `</div>`;
+            }
         }
 
         tooltip += `</div></div></div></div>`;
@@ -153,7 +157,7 @@ export class MonsterTooltip extends Mod {
         const result: Monster[] = new Array();
 
         monsters.forEach(monster => {
-            const m: Monster = {name: monster.staticInfos.nameId, level: monster.staticInfos.level, quantity: 1};
+            const m: Monster = {name: monster.staticInfos.nameId, level: monster.staticInfos.level, quantity: 1, isBoss: monster.staticInfos.isBoss};
             const monsterFind: Monster = result.find(r => r.name === m.name && r.level === m.level);
 
             if (monsterFind != null) monsterFind.quantity += 1;
@@ -165,33 +169,52 @@ export class MonsterTooltip extends Mod {
         return result;
     }
 
+    // FIXME Problems with formula 
     private getTooltipData(group: any): TooltipData {
+        // General data
         const { partyData, characterBaseInformations } = this.wGame.gui.playerData;
-        const monsters = [group.staticInfos.mainCreatureLightInfos, ...group.staticInfos.underlings];
-        const groupLevel = monsters.reduce((level, monster) => level + monster.staticInfos.level, 0);
+        const allMonsters: any[] = [group.staticInfos.mainCreatureLightInfos, ...group.staticInfos.underlings];
         const starsCount = Math.min(Math.round(group.ageBonus / 20), 10);
         const redStarsCount = Math.max(starsCount - 5, 0);
         const yellowStarsCount = Math.min(starsCount, 5) - redStarsCount;
-        const monstersXp = monsters.reduce((xp, monster) => xp + monster.staticInfos.xp, 0);
-        const highestMonsterLevel = monsters.slice().sort((a, b) => a.staticInfos.level < b.staticInfos.level ? 1 : 1).pop();
-
-        const soloXp = this.calculateXp(
-            monstersXp,
-            characterBaseInformations.level,
-            characterBaseInformations.level,
-            groupLevel,
-            highestMonsterLevel,
-            group.ageBonus,
-        );
-
+        const alternatives: Map<number, any> = new Map();
+        let monsters: any[] = new Array();
+        let playerCount: number = 1;
+        // Party data
+        let party, partyLevels, partyLevel, highestPartyLevel, partySizeExcludingLowLevels, partySizeModifier;
         let partyXp = -1;
+
+
+        // Update party data if player has party
         if (Object.keys(partyData._partyFromId).length > 0) {
-            const party = partyData._partyFromId[Object.keys(partyData._partyFromId)[0]];
-            const partyLevels = [characterBaseInformations.level, ...Object.keys(party._members).map(id => party._members[id].level)];
-            const partyLevel = partyLevels.reduce((total, level) => total + level);
-            const highestPartyLevel = partyLevels.slice().sort((a, b) => a < b ? -1 : 1).pop();
-            const partySizeExcludingLowLevels = partyLevels.filter(level => level >= highestPartyLevel / 3).length;
-            const partySizeModifier = MonsterTooltip.partySizeModifier[partySizeExcludingLowLevels];
+            party = partyData._partyFromId[Object.keys(partyData._partyFromId)[0]];
+            partyLevels = [characterBaseInformations.level, ...Object.keys(party._members).map(id => party._members[id].level)];
+            partyLevel = partyLevels.reduce((total, level) => total + level);
+            highestPartyLevel = partyLevels.slice().sort((a, b) => a < b ? -1 : 1).pop();
+            partySizeExcludingLowLevels = partyLevels.filter(level => level >= highestPartyLevel / 3).length;
+            partySizeModifier = MonsterTooltip.partySizeModifier[partySizeExcludingLowLevels];
+            playerCount = partyLevels.length;
+        }
+
+        // Get alternatives
+        if (group.staticInfos.alternatives != null) {
+            group.staticInfos.alternatives.forEach(alternative => alternatives.set(alternative.playerCount, alternative));
+
+            const alternativesMonster: any[] = alternatives.get(MonsterTooltip.alternativeModifier[playerCount]).monsters;
+            alternativesMonster.forEach(monster => {
+                const tempMonster = allMonsters.find(m => m.creatureGenericId == monster.creatureGenericId);
+                allMonsters.splice(allMonsters.indexOf(tempMonster), 1);
+                monsters.push(tempMonster);
+            });
+        } else {
+            monsters = allMonsters;
+        }
+        
+        const groupLevel = monsters.reduce((level, monster) => level + monster.staticInfos.level, 0);
+        const monstersXp = monsters.reduce((xp, monster) => xp + monster.staticInfos.xp, 0);
+        const highestMonsterLevel = monsters.slice().sort((a, b) => a.staticInfos.level - b.staticInfos.level).pop();
+
+        if (Object.keys(partyData._partyFromId).length > 0) {
             partyXp = this.calculateXp(
                 monstersXp,
                 characterBaseInformations.level,
@@ -202,6 +225,15 @@ export class MonsterTooltip extends Mod {
                 partySizeModifier,
             );
         }
+
+        const soloXp = this.calculateXp(
+            monstersXp,
+            characterBaseInformations.level,
+            characterBaseInformations.level,
+            groupLevel,
+            highestMonsterLevel,
+            group.ageBonus,
+        );
 
         const bonusPackActive = this.wGame.gui.playerData.identification.subscriptionEndDate > Date.now();
         return {
@@ -287,10 +319,22 @@ export class MonsterTooltip extends Mod {
         8: 4.7,
     }
 
+    private static alternativeModifier = {
+        1: 1,
+        2: 1,
+        3: 1,
+        4: 1,
+        5: 5,
+        6: 6,
+        7: 7,
+        8: 8,
+    }
+
 }
 
 export interface Monster {
     name: string;
     level: number;
     quantity: number;
+    isBoss: boolean;
 }
