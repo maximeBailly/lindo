@@ -19,7 +19,7 @@ export class AutoHarvest extends Mod {
     startMod(): void {
         this.params = this.settings.option.vip.general;
 
-        if(/*this.params.auto_harvest*/ true) {
+        if(/*this.params.auto_harvest*/ false) {
             Logger.info('- enable AutoHarvest');
 
             setTimeout(() => {
