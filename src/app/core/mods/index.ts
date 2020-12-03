@@ -15,3 +15,4 @@ export { Shortcuts } from "app/core/mods/shortcuts/shortcuts";
 export { Harvest } from "app/core/mods/harvestBar/harvest";
 export { AutoHarvest } from "app/core/mods/autoHarvest/autoHarvest";
 export { MonsterTooltip } from "app/core/mods/monsterTooltip/monsterTooltip";
+export { AutoPass } from "app/core/mods/autopass/autopass";
