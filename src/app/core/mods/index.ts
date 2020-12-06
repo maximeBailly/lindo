@@ -13,3 +13,4 @@ export { PartyInfo } from "app/core/mods/partyInfo/partyInfo";
 export { RapidExchange } from "app/core/mods/rapidExchange/rapidExchange";
 export { Shortcuts } from "app/core/mods/shortcuts/shortcuts";
 export { Harvest } from "app/core/mods/harvestBar/harvest";
+export { Themes } from "app/core/mods/themes/themes";
