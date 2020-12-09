@@ -48,6 +48,7 @@ export class AutoPass extends Mod {
 
         this.input.setAttribute('type', 'checkbox');
         this.input.setAttribute('id', 'autoPass');
+        this.input.checked = this.isActivate;
 
         this.container.innerText = 'AutoPass';
         this.container.classList.add('auto-pass-container');
