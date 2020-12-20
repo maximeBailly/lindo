@@ -71,7 +71,9 @@
             "zaapsearchfilter" : "Afficher le filtre de recherche de zaap",
             "harvest-indicator" : "Barres de temps sous les récoltes",
             "monster-tooltip": "Affiche les informations des groupes de monstres sur la carte",
-            "monster-tooltip-shortcut": "Raccourci pour les informations des groupes de monstres"
+            "monster-tooltip-shortcut": "Raccourci pour les informations des groupes de monstres",
+            "show-resources" : "Affiches les ressources de la carte",
+            "show-resources-shortcut" : "Raccourcis pour l'affichage des ressources"
           },
           "groups": {
             "header": "Groupe"

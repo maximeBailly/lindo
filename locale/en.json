@@ -71,7 +71,9 @@
             "zaapsearchfilter" : "Show zaap search filter",
             "harvest-indicator" : "Activate the display of the remaining time below the ressources",
             "monster-tooltip": "Display monsters groups informations on the map",
-            "monster-tooltip-shortcut": "Shortcut for show/hide monsters tooltip"
+            "monster-tooltip-shortcut": "Shortcut for show/hide monsters tooltip",
+            "show-resources" : "Show map resources",
+            "show-resources-shortcut" : "Shortcut for show/hide map resources"
           },
           "groups": {
             "header": "Groups"
