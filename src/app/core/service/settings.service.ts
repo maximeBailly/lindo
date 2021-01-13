@@ -718,6 +718,8 @@ export module Option {
             private _party_info_pp:boolean;
             private _party_info_lvl:boolean;
             private _harvest_indicator: boolean;
+            private _show_resources: boolean;
+            private _show_resources_shortcut: string;
 
             get party_info_pp():boolean{
                 return this._party_info_pp;
@@ -818,6 +820,24 @@ export module Option {
                 this._harvest_indicator = harvest_indicator;
             }
 
+            get show_resources(): boolean {
+                return this._show_resources;
+            }
+
+            set show_resources(show_resources: boolean) {
+                this.settingsProvider.write('option.vip.general.show_resources', show_resources);
+                this._show_resources = show_resources;
+            }
+
+            get show_resources_shortcut(): string {
+                return this._show_resources_shortcut;
+            }
+
+            set show_resources_shortcut(show_resources_shortcut: string) {
+                this.settingsProvider.write('option.vip.general.show_resources_shortcut', show_resources_shortcut);
+                this._show_resources_shortcut = show_resources_shortcut;
+            }
+
             constructor(private settingsProvider: SettingsProvider) {
                 this.disable_inactivity = this.settingsProvider.read('option.vip.general.disable_inactivity');
                 this.health_bar = this.settingsProvider.read('option.vip.general.health_bar');
@@ -830,6 +850,8 @@ export module Option {
                 this.party_info_pp = this.settingsProvider.read('option.vip.general.party_info_pp');
                 this.party_info_lvl = this.settingsProvider.read('option.vip.general.party_info_lvl');
                 this.harvest_indicator = this.settingsProvider.read('option.vip.general.harvest_indicator');
+                this.show_resources = this.settingsProvider.read('option.vip.general.show_resources');
+                this.show_resources_shortcut = this.settingsProvider.read('option.vip.general.show_resources_shortcut');
             }
         }
 
