@@ -1,6 +1,15 @@
 ## ⚠ ATTENTION, VÉRIFIEZ QUE VOUS TÉLÉCHARGEZ LINDO DEPUIS LINDO.NO-EMU.CO
 ## ⚠ CERTAINS SITES MALVEILLANTS INSTALLERONT UN VIRUS SUR VOTRE ORDINATEUR
 
+## [2.5.3] - 2021-01-13
+
+### Ajouts
+
+- Ajout d'un indicateur de progrès lors de la récolte d'une ressource
+- Ajout d'un raccourci permettant d'afficher les rssources de la carte
+- Ajout d'un raccourci permettant d'afficher les monstres de la carte
+- Ajout d'un indicateur permettant de savoir si les membres de votre groupe sont sur la même carte
+
 ## [2.5.2] - 2020-11-14
 
 ### Améliorations
