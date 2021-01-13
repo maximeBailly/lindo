@@ -721,6 +721,8 @@ export module Option {
             private _harvest_indicator: boolean;
             private _show_resources: boolean;
             private _show_resources_shortcut: string;
+            private _monster_tooltip: boolean;
+            private _monster_tooltip_shortcut: string;
 
             get party_info_pp():boolean{
                 return this._party_info_pp;
@@ -848,6 +850,24 @@ export module Option {
                 this.settingsProvider.write('option.vip.general.show_resources_shortcut', show_resources_shortcut);
                 this._show_resources_shortcut = show_resources_shortcut;
             }
+            
+            get monster_tooltip(): boolean {
+                return this._monster_tooltip;
+            }
+
+            set monster_tooltip(monster_tooltip: boolean) {
+                this.settingsProvider.write('option.vip.general.monster_tooltip', monster_tooltip);
+                this._monster_tooltip = monster_tooltip;
+            }
+
+            get monster_tooltip_shortcut(): string {
+                return this._monster_tooltip_shortcut;
+            }
+
+            set monster_tooltip_shortcut(monster_tooltip_shortcut: string) {
+                this.settingsProvider.write('option.vip.general.monster_tooltip_shortcut', monster_tooltip_shortcut);
+                this._monster_tooltip_shortcut = monster_tooltip_shortcut;
+            }
 
             constructor(private settingsProvider: SettingsProvider) {
                 this.disable_inactivity = this.settingsProvider.read('option.vip.general.disable_inactivity');
@@ -864,6 +884,8 @@ export module Option {
                 this.harvest_indicator = this.settingsProvider.read('option.vip.general.harvest_indicator');
                 this.show_resources = this.settingsProvider.read('option.vip.general.show_resources');
                 this.show_resources_shortcut = this.settingsProvider.read('option.vip.general.show_resources_shortcut');
+                this._monster_tooltip = this.settingsProvider.read('option.vip.general.monster_tooltip');
+                this._monster_tooltip_shortcut = this.settingsProvider.read('option.vip.general.monster_tooltip_shortcut');
             }
         }
 

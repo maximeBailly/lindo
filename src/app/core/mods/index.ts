@@ -15,3 +15,4 @@ export { PartyMember } from "app/core/mods/partyInfo/partyMemberOnMap";
 export { RapidExchange } from "app/core/mods/rapidExchange/rapidExchange";
 export { Shortcuts } from "app/core/mods/shortcuts/shortcuts";
 export { ShowResources } from "app/core/mods/showResources/showResources";
+export { MonsterTooltip } from "app/core/mods/monsterTooltip/monsterTooltip";
