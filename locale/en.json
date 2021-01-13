@@ -70,7 +70,8 @@
             "zaapsearchfilter" : "Show zaap search filter",
             "harvest-indicator" : "Activate the display of the remaining time below the ressources",
             "show-resources" : "Show map resources",
-            "show-resources-shortcut" : "Shortcut to show/hide map resources"
+            "show-resources-shortcut" : "Shortcut to show/hide map resources",
+            "party_member_on_map" : "Adds an indicator to know if the members of a group are on the same map"
           },
           "groups": {
             "header": "Groups"

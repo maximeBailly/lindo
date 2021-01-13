@@ -70,7 +70,8 @@
             "zaapsearchfilter" : "Afficher le filtre de recherche de zaap",
             "harvest-indicator" : "Barres de temps sous les récoltes",
             "show-resources" : "Affiches les ressources de la carte",
-            "show-resources-shortcut" : "Raccourcis pour l'affichage des ressources"
+            "show-resources-shortcut" : "Raccourcis pour l'affichage des ressources",
+            "party_member_on_map" : "Ajoute un indicateur pour savoir si les membres d'un groupe sont sur la même carte"
           },
           "groups": {
             "header": "Groupe"
