@@ -62,8 +62,8 @@ export class AutoPass extends Mod {
     }
 
     private remove() {
-        this.container.remove();
-        this.input.remove();
+        if (this.container) this.container.remove();
+        if (this.input) this.input.remove();
     }
 
     public reset() {

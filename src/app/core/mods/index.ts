@@ -5,7 +5,6 @@ export { AutoGroup } from "app/core/mods/autoGroup/autoGroup";
 export { DamageEstimator } from "app/core/mods/damageEstimator/damageEstimator";
 export { FightChronometer } from "app/core/mods/fightChronometer/fightChronometer";
 export { ZaapSearchFilter } from "app/core/mods/zaapSearchFilter/zaapSearchFilter";
-export { Harvest } from "app/core/mods/harvestBar/harvest";
 export { HealthBar } from "app/core/mods/healthBar/healthBar";
 export { HideMount } from "app/core/mods/hideMount/hideMount";
 export { Jobsxp } from "app/core/mods/jobsxp/jobsxp";

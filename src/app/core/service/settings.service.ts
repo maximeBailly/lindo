@@ -734,7 +734,6 @@ export module Option {
             private _show_resources: boolean;
             private _show_resources_shortcut: string;
             private _party_member_on_map:boolean;
-            private _harvest_indicator: boolean;
 
             get party_info_pp():boolean{
                 return this._party_info_pp;
@@ -878,15 +877,6 @@ export module Option {
             set party_member_on_map(party_member_on_map: boolean) {
                 this.settingsProvider.write('option.vip.general.party_member_on_map', party_member_on_map);
                 this._party_member_on_map = party_member_on_map;
-            }
-
-            get harvest_indicator(): boolean {
-                return this._harvest_indicator;
-            }
-
-            set harvest_indicator(harvest_indicator: boolean) {
-                this.settingsProvider.write('option.vip.general.harvest_indicator', harvest_indicator);
-                this._harvest_indicator = harvest_indicator;
             }
 
             constructor(private settingsProvider: SettingsProvider) {
