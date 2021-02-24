@@ -1,5 +1,4 @@
 import { Logger } from "app/core/electron/logger.helper";
-import { time } from "console";
 
 import { Mod } from "../mod";
 import { HarvestBar } from "./harvestBar";
@@ -31,7 +30,7 @@ export class Harvest extends Mod {
                 transition-duration: 500ms;
                 margin-top: 10px;
             }
-
+            
             .harvestBar {
                 transition-duration: 300ms;
                 height: 100%;
@@ -50,6 +49,7 @@ export class Harvest extends Mod {
                 transition-duration: 500ms;
                 margin-top: 4px;
             }`;
+            
             this.wGame.document.getElementsByTagName('head')[0].appendChild(harvestCss);
 
             this.harvestBar = new HarvestBar(this.wGame);

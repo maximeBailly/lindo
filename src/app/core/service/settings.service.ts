@@ -733,6 +733,8 @@ export module Option {
             private _monster_tooltip_shortcut: string;
             private _show_resources: boolean;
             private _show_resources_shortcut: string;
+            private _party_member_on_map:boolean;
+            private _harvest_indicator: boolean;
 
             get party_info_pp():boolean{
                 return this._party_info_pp;
@@ -869,6 +871,24 @@ export module Option {
                 this._show_resources_shortcut = show_resources_shortcut;
             }
 
+            get party_member_on_map():boolean {
+                return this._party_member_on_map;
+            }
+
+            set party_member_on_map(party_member_on_map: boolean) {
+                this.settingsProvider.write('option.vip.general.party_member_on_map', party_member_on_map);
+                this._party_member_on_map = party_member_on_map;
+            }
+
+            get harvest_indicator(): boolean {
+                return this._harvest_indicator;
+            }
+
+            set harvest_indicator(harvest_indicator: boolean) {
+                this.settingsProvider.write('option.vip.general.harvest_indicator', harvest_indicator);
+                this._harvest_indicator = harvest_indicator;
+            }
+
             constructor(private settingsProvider: SettingsProvider) {
                 this.disable_inactivity = this.settingsProvider.read('option.vip.general.disable_inactivity');
                 this.health_bar = this.settingsProvider.read('option.vip.general.health_bar');
@@ -885,6 +905,8 @@ export module Option {
                 this._monster_tooltip_shortcut = this.settingsProvider.read('option.vip.general.monster_tooltip_shortcut');
                 this.show_resources = this.settingsProvider.read('option.vip.general.show_resources');
                 this.show_resources_shortcut = this.settingsProvider.read('option.vip.general.show_resources_shortcut');
+                this.party_member_on_map = this.settingsProvider.read('option.vip.general.party_member_on_map');
+                this.harvest_indicator = this.settingsProvider.read('option.vip.general.harvest_indicator');
             }
         }
 

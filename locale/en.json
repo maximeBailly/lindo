@@ -73,7 +73,9 @@
             "monster-tooltip": "Display monsters groups informations on the map",
             "monster-tooltip-shortcut": "Shortcut for show/hide monsters tooltip",
             "show-resources" : "Show map resources",
-            "show-resources-shortcut" : "Shortcut to show/hide map resources"
+            "show-resources-shortcut" : "Shortcut to show/hide map resources",
+            "harvest-indicator" : "Activate the display of the remaining time below the ressources",
+            "party-member-on-map" : "Add an indicator to know if the members of a group are on the same map"
           },
           "groups": {
             "header": "Groups"

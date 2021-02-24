@@ -5,13 +5,14 @@ import { Resources, Resource, iconIdByTypeId, ressourcesToSkip } from "./resourc
 
 export class ShowResources extends Mod {
     private shortcutsHelper: ShortcutsHelper;
+    private loadDataTry: number = 0;
     
     private data: Map<number, Resources> = new Map();
     private elemIdToTypeid: Map<number, number> = new Map();
-    private resourceTotal: number = 0;
 
     private resourcesBox: HTMLDivElement;
     private enabled: boolean = true;
+    private isHide: boolean = false;
 
     startMod(): void {
         this.params = this.settings.option.vip.general;
@@ -39,7 +40,10 @@ export class ShowResources extends Mod {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    padding: 0 10px;
+                    padding: 0 5px;
+                    margin: 0 5px;
+                    border-radius: 4px;
+                    background-color: #00000033;
                 }
 
                 .resource-item p {
@@ -58,7 +62,40 @@ export class ShowResources extends Mod {
 
             this.on(this.wGame.dofus.connectionManager, 'MapComplementaryInformationsDataMessage', (e: any) => this.onMapComplementaryInfos(e.interactiveElements, e.statedElements));
             this.on(this.wGame.dofus.connectionManager, 'StatedElementUpdatedMessage', ({statedElement}) => this.onStatedElementUpdated(statedElement));
-            this.on(this.wGame.dofus.connectionManager, 'GameFightStartingMessage', () => this.clearHtml());
+            this.on(this.wGame.dofus.connectionManager, 'GameFightStartingMessage', () => {
+                if (this.enabled) {
+                    this.isHide = true;
+                    this.toggle();
+                }
+            });
+
+            setTimeout(() => this.loadMapInfoOnStart(), 100);
+        }
+    }
+
+    /**
+     * Use to load map informations when player activate mod in game
+     */
+    private loadMapInfoOnStart() {
+        // Get data from isoEngine
+        const interactives = this.wGame.isoEngine.mapRenderer.interactiveElements;
+        const stated = this.wGame.isoEngine.mapRenderer.statedElements;
+
+        if (interactives != null && stated != null) {
+            const interactiveElements = [];
+            const statedElements = [];
+
+            // Push data in Array
+            for(const i in interactives) { interactiveElements.push(interactives[i]); }
+            for(const s in stated) { statedElements.push(stated[s]); }
+
+            this.loadDataTry = 0;
+            this.onMapComplementaryInfos(interactiveElements, statedElements);
+        } else if (this.loadDataTry < 15) {
+            this.loadDataTry++;
+            setTimeout(() => this.loadMapInfoOnStart(), 100);
+        } else {
+            this.loadDataTry = 0;
         }
     }
 
@@ -67,7 +104,6 @@ export class ShowResources extends Mod {
 
         const statedMap: Map<number, number> = new Map();
         statedElements.forEach((s) => statedMap.set(s.elementId, s.elementState));
-        this.resourceTotal = interactiveElements.length;
 
         // create all resources and add state
         interactiveElements.forEach((i) => {
@@ -87,16 +123,15 @@ export class ShowResources extends Mod {
             this.elemIdToTypeid.set(i.elementId, i.elementTypeId);
         });
 
-        if (this.enabled) this.create();
+        if (this.enabled || this.isHide) this.create();
     }
 
     /**
-     * Update the target element and recreate the html
+     * Update the target element
      * @param statedElement Element to update
      */
     private onStatedElementUpdated(statedElement: any) {
         setTimeout(() => {
-            this.clearHtml();
             const typeId: number = this.elemIdToTypeid.get(statedElement.elementId);
 
             try {
@@ -108,20 +143,31 @@ export class ShowResources extends Mod {
                 console.error('Unabled to update resource with typeId = ' + typeId);
             }
 
-            if (this.enabled) this.create();
+            if (this.enabled) this.updateResourceInDom(typeId);
         }, 500);
     }
 
+    private updateResourceInDom(typeId: number) {
+        const r: HTMLElement = this.wGame.document.getElementById('sr_' + typeId + '_count');
+        r.innerText = this.data.get(typeId).getCount();
+    }
+
     private create() {
+        if (this.isHide) this.isHide = false;
+
         this.resourcesBox = this.wGame.document.createElement('div');
         this.resourcesBox.id = 'resourcesBox';
 
         this.data.forEach(resource => {
-            let item = `
-                <div class="resource-item">
-                    <img src="${resource.getIcon()}"/>
+            let item = `<div class="resource-item"> <div>`;
+
+            resource.getIcon().forEach((icon) => {
+                item += `<img src="${icon}"/>`;
+            });
+
+            item += `</div>
                     <p>${resource.name}</p>
-                    <p>${resource.getCount()}</p>
+                    <p id="sr_${resource.typeId}_count">${resource.getCount()}</p>
                 </div>
             `;
             this.resourcesBox.insertAdjacentHTML('beforeend', item);
@@ -146,8 +192,7 @@ export class ShowResources extends Mod {
     }
 
     private clear() {
-        this.resourceTotal = 0;
-        this.data.clear();
+        if (this.data) this.data.clear();
         this.clearHtml();
     }
 
