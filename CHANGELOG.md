@@ -1,10 +1,9 @@
 ## ⚠ ATTENTION, VÉRIFIEZ QUE VOUS TÉLÉCHARGEZ LINDO DEPUIS LINDO.NO-EMU.CO
 ## ⚠ CERTAINS SITES MALVEILLANTS INSTALLERONT UN VIRUS SUR VOTRE ORDINATEUR
 
-## [2.6.0]
+## [2.6.0] - 2021-02-25
 
 ### Ajouts
-- Ajout d'une barre sous chaque ressource utilisée permettant de visualiser le temps restant
 - Ajout d'une icone sur les membres de groupes pour savoir s'il sont sur la meme map
 - Ajout de favoris pour les zaaps
 - Ajout d'un affichage des ressourses presentes sur la carte
@@ -14,6 +13,15 @@
 
 ### Correctifs
 - Crash de Lindo avec le déplacement rapide lorsque la case est inaccessible
+
+## [2.5.3 Custom] - 2020-11-30
+
+### Ajouts
+
+ - Ajout d'une notification lors de la vente d'un item
+ - Ajout d'une barre sous chaque ressource utilisée permettant de visualiser le temps restant
+ - Ajout de bulles d'informations sur les groupes de monstre
+ - Ajout d'une option pour passer son tour automatiquement
 
 ## [2.5.2] - 2020-11-14
 

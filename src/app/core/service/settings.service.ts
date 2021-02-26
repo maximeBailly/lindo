@@ -617,6 +617,16 @@ export module Option {
         private _party_invitation: boolean;
         private _aggression: boolean;
         private _focus_fight_turn: boolean;
+        private _sale_message: boolean;
+
+        get sale_message() {
+            return this._sale_message;
+        }
+
+        set sale_message(sale_message: any) {
+            this.settingsProvider.write('option.notification.sale_message', sale_message);
+            this._sale_message = sale_message;
+        }
 
         get private_message() {
             return this._private_message;
@@ -689,6 +699,7 @@ export module Option {
             this.party_invitation = this.settingsProvider.read('option.notification.party_invitation');
             this.aggression = this.settingsProvider.read('option.notification.aggression');
             this.focus_fight_turn = this.settingsProvider.read('option.notification.focus_fight_turn');
+            this.sale_message = this.settingsProvider.read('option.notification.sale_message');
         }
     }
 
@@ -716,10 +727,12 @@ export module Option {
             private _hidden_mount: boolean;
             private _party_info_pp:boolean;
             private _party_info_lvl:boolean;
+            private _harvest_indicator: boolean;
+            private _monster_tooltip: boolean;
+            private _monster_tooltip_shortcut: string;
             private _show_resources: boolean;
             private _show_resources_shortcut: string;
             private _party_member_on_map:boolean;
-            private _harvest_indicator: boolean;
 
             get party_info_pp():boolean{
                 return this._party_info_pp;
@@ -811,6 +824,33 @@ export module Option {
                 this._health_bar_shortcut = health_bar_shortcut;
             }
 
+            get harvest_indicator(): boolean {
+                return this._harvest_indicator;
+            }
+
+            set harvest_indicator(harvest_indicator: boolean) {
+                this.settingsProvider.write('option.vip.general.harvest_indicator', harvest_indicator);
+                this._harvest_indicator = harvest_indicator;
+            }
+
+            get monster_tooltip(): boolean {
+                return this._monster_tooltip;
+            }
+
+            set monster_tooltip(monster_tooltip: boolean) {
+                this.settingsProvider.write('option.vip.general.monster_tooltip', monster_tooltip);
+                this._monster_tooltip = monster_tooltip;
+            }
+
+            get monster_tooltip_shortcut(): string {
+                return this._monster_tooltip_shortcut;
+            }
+
+            set monster_tooltip_shortcut(monster_tooltip_shortcut: string) {
+                this.settingsProvider.write('option.vip.general.monster_tooltip_shortcut', monster_tooltip_shortcut);
+                this._monster_tooltip_shortcut = monster_tooltip_shortcut;
+            }
+            
             get show_resources(): boolean {
                 return this._show_resources;
             }
@@ -838,15 +878,6 @@ export module Option {
                 this._party_member_on_map = party_member_on_map;
             }
 
-            get harvest_indicator(): boolean {
-                return this._harvest_indicator;
-            }
-
-            set harvest_indicator(harvest_indicator: boolean) {
-                this.settingsProvider.write('option.vip.general.harvest_indicator', harvest_indicator);
-                this._harvest_indicator = harvest_indicator;
-            }
-
             constructor(private settingsProvider: SettingsProvider) {
                 this.disable_inactivity = this.settingsProvider.read('option.vip.general.disable_inactivity');
                 this.health_bar = this.settingsProvider.read('option.vip.general.health_bar');
@@ -858,6 +889,9 @@ export module Option {
                 this.hidden_mount = this.settingsProvider.read('option.vip.general.hidden_mount');
                 this.party_info_pp = this.settingsProvider.read('option.vip.general.party_info_pp');
                 this.party_info_lvl = this.settingsProvider.read('option.vip.general.party_info_lvl');
+                this.harvest_indicator = this.settingsProvider.read('option.vip.general.harvest_indicator');
+                this._monster_tooltip = this.settingsProvider.read('option.vip.general.monster_tooltip');
+                this._monster_tooltip_shortcut = this.settingsProvider.read('option.vip.general.monster_tooltip_shortcut');
                 this.show_resources = this.settingsProvider.read('option.vip.general.show_resources');
                 this.show_resources_shortcut = this.settingsProvider.read('option.vip.general.show_resources_shortcut');
                 this.party_member_on_map = this.settingsProvider.read('option.vip.general.party_member_on_map');

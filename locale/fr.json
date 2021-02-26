@@ -21,7 +21,8 @@
       "tax-collector": "Un percepteur est attaqué !",
       "kolizeum": "Un Kolizéum a été trouvé !",
       "party-invitation": "{{character}} vous invite à rejoindre son groupe.",
-      "aggression": "Vous avez été aggressé !"
+      "aggression": "Vous avez été aggressé !",
+      "sale-message": "Banque"
     },
     "window": {
       "changelog": {
@@ -73,8 +74,9 @@
             "hide-mount": "Cacher les montures pendant les combats",
             "fightchronometer": "Afficher le chronomètre de combats",
             "zaapsearchfilter" : "Afficher le filtre de recherche de zaap",
-            "show-resources" : "Affiches les ressources de la carte",
             "harvest-indicator" : "Barres de temps sous les récoltes",
+            "monster-tooltip": "Affiche les informations des groupes de monstres sur la carte",
+            "show-resources" : "Affiches les ressources de la carte",
             "party-member-on-map" : "Ajoute un indicateur pour savoir si les membres d'un groupe sont sur la même carte"
           },
           "groups": {
@@ -222,6 +224,10 @@
         },
         "jobsxp": {
           "text": " XP manquant<br>avant le niveau "
+        },
+        "monstertooltip": {
+          "level": "Rang",
+          "group": "Groupe"
         }
       },
       "general": {
@@ -295,7 +301,8 @@
         },
         "mods": {
           "show-resources" : "Affichage des ressources",
-          "health-bar": "Afficher la barres de vie"
+          "health-bar": "Afficher la barres de vie",
+          "monster-tooltip": "Affiche infos des groupes de monstres"
         }
       },
       "notifications": {
@@ -306,7 +313,8 @@
         "tax-collector": "Quand un percepteur est attaqué",
         "kolizeum": "Quand un combat de kolizéum est trouvé",
         "party-invitation": "Quand un joueur vous invite dans un groupe",
-        "aggression": "Quand un joueur vous aggresse"
+        "aggression": "Quand un joueur vous aggresse",
+        "sale-message": "Lors de la vente d'un objet"
       },
       "save": "Valider",
       "prompt": {
