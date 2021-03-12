@@ -177,6 +177,7 @@ export const iconIdByTypeId: any = {
 }
 
 export const ressourcesToSkip: number[] = [
+    -1,     // undefined
     2,      // Scie
     11,     // Table de confection
     12,     // Atelier
