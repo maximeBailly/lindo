@@ -1,5 +1,6 @@
 import { Logger } from "app/core/electron/logger.helper";
 import { Mod } from "../mod";
+import { WindowAutoHarvest } from "./windowAutoHarvest";
 
 export class AutoHarvest extends Mod {
     private readonly STATE_USE: number = 2;
@@ -18,26 +19,14 @@ export class AutoHarvest extends Mod {
     private isLoading: boolean = false;
     private changeMap: boolean = false;
 
+    private autoHarvestWindow: WindowAutoHarvest;
+
     startMod(): void {
         this.params = this.settings.option.vip.general;
 
-        if(/*this.params.auto_harvest*/ true) {
-            Logger.info('- enable AutoHarvest');
+        Logger.info('- enable AutoHarvest');
 
-            setTimeout(() => {
-                this.getJobsSkills();
-            }, 4000);
-
-            // Start Listener
-            this.onGameMapChange();
-            this.onInteractiveElementUpdate();
-            this.onInteractiveUseEndedMessage();
-            this.onInventoryWeightMessage();
-            this.onStatedElementUpdatedMessage()
-            this.onChangeMapMessage();
-
-            this.checkForAwaitingInteractives();
-        }
+        this.autoHarvestWindow = WindowAutoHarvest.getInstance(this.wGame, this.params, this);
     }
 
     private checkForAwaitingInteractives() {
@@ -64,20 +53,6 @@ export class AutoHarvest extends Mod {
                 console.log('Force "isInHarvest" reinitialization -> ', this.isInHarvest);
             }
         }, 1000);
-    }
-
-    // TODO Move in autoHarvest gestionnaire
-    private getJobsSkills() {
-        const listJobs: Array<number> = this.wGame.gui.playerData.jobs.jobOriginalOrder;
-        listJobs.forEach(jobId => {
-            const job = this.wGame.gui.playerData.jobs.list[jobId];
-
-            job.description.skills.forEach(skill => {
-                if (skill._type == 'SkillActionDescriptionCollect') {
-                    this.skillsToUse.push(skill.skillId);
-                }
-            });
-        });
     }
 
     /**
@@ -224,6 +199,40 @@ export class AutoHarvest extends Mod {
     }
 
 
+    /* Shared methods */
+
+    public startAutoHarvest(): boolean {
+        // Start Listener
+        this.onGameMapChange();
+        this.onInteractiveElementUpdate();
+        this.onInteractiveUseEndedMessage();
+        this.onInventoryWeightMessage();
+        this.onStatedElementUpdatedMessage()
+        this.onChangeMapMessage();
+
+        // Start loop
+        this.checkForAwaitingInteractives();
+        return true;
+    }
+
+    public stopAutoHarvest(): boolean {
+        clearInterval(this.checkInterval);
+        clearInterval(this.resetHarvestInterval);
+        super.reset();
+        return false;
+    }
+
+    public addSkillToUse(skillId: number) {
+        this.skillsToUse.push(+skillId);
+        console.log('SkillToUse: ',this.skillsToUse);
+    }
+
+    public removeSkillToUse(skillId: number) {
+        const index: number = this.skillsToUse.indexOf(+skillId);
+        this.skillsToUse.splice(index, 1);
+    }
+
+
     /* Utils function */
 
     private deleteWaitingInteractive(elementId: number) {
@@ -243,9 +252,9 @@ export class AutoHarvest extends Mod {
     }
 
     public reset() {
-        super.reset();
-        clearInterval(this.checkInterval);
-        clearInterval(this.resetHarvestInterval);
+        console.log('Reset mod !');
+        this.autoHarvestWindow.reset();
+        console.log('AutoHarvestWindow : ', this.autoHarvestWindow);
     }
     
 }
