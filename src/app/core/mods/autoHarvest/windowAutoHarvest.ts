@@ -66,7 +66,7 @@ export class WindowAutoHarvest {
         this.wGame.document.querySelector('head').appendChild(autoHarvestCss);
 
         this.shortcutsHelper = new ShortcutsHelper(this.wGame);
-        this.shortcutsHelper.bind(/*this.params.auto_harvest_shortcut*/'y', () => this.toggle() );
+        this.shortcutsHelper.bind(this.params.auto_harvest_shortcut, () => this.toggle() );
 
         this.wGame.dofus.connectionManager.on('JobLevelUpMessage', this.onJobLevelUp);
 

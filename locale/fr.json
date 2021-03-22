@@ -302,7 +302,8 @@
         "mods": {
           "show-resources" : "Affichage des ressources",
           "health-bar": "Afficher la barres de vie",
-          "monster-tooltip": "Affiche infos des groupes de monstres"
+          "monster-tooltip": "Affiche infos des groupes de monstres",
+          "auto-harvest": "Fenêtre d'auto-récolte"
         }
       },
       "notifications": {

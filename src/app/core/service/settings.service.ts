@@ -733,6 +733,7 @@ export module Option {
             private _show_resources: boolean;
             private _show_resources_shortcut: string;
             private _party_member_on_map:boolean;
+            private _auto_harvest_shortcut: string;
 
             get party_info_pp():boolean{
                 return this._party_info_pp;
@@ -878,6 +879,15 @@ export module Option {
                 this._party_member_on_map = party_member_on_map;
             }
 
+            get auto_harvest_shortcut(): string {
+                return this._auto_harvest_shortcut;
+            }
+
+            set auto_harvest_shortcut(auto_harvest_shortcut: string) {
+                this.settingsProvider.write('option.vip.general.auto_harvest_shortcut', auto_harvest_shortcut);
+                this._auto_harvest_shortcut = auto_harvest_shortcut;
+            }
+
             constructor(private settingsProvider: SettingsProvider) {
                 this.disable_inactivity = this.settingsProvider.read('option.vip.general.disable_inactivity');
                 this.health_bar = this.settingsProvider.read('option.vip.general.health_bar');
@@ -896,6 +906,7 @@ export module Option {
                 this.show_resources_shortcut = this.settingsProvider.read('option.vip.general.show_resources_shortcut');
                 this.party_member_on_map = this.settingsProvider.read('option.vip.general.party_member_on_map');
                 this.harvest_indicator = this.settingsProvider.read('option.vip.general.harvest_indicator');
+                this._auto_harvest_shortcut = this.settingsProvider.read('option.vip.general.auto_harvest_shortcut');
             }
         }
 
