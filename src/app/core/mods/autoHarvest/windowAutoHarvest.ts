@@ -32,7 +32,7 @@ export class WindowAutoHarvest {
         // Init global variable
         this.windowHelper = new CustomWindowHelper(this.wGame);
         this.window = this.windowHelper.getWindow();
-        this.inputHelper = this.windowHelper.getInputsHelper();
+        this.inputHelper = this.windowHelper.getInputsHelper;
 
         let autoHarvestCss = document.createElement('style');
         autoHarvestCss.id = 'resourcesBoxCss';
@@ -58,6 +58,9 @@ export class WindowAutoHarvest {
             }
             .atohvt-btn {
                 width: 100%;
+            }
+            .atohvt-minTime {
+                margin-right: 5px;
             }
         `;
         this.wGame.document.querySelector('head').appendChild(autoHarvestCss);
@@ -96,20 +99,26 @@ export class WindowAutoHarvest {
     private createWindow() {
         // Create container
         this.window.createDofusWindow('Récolte Automatique', 'autoHarvestWindow').makeDraggable().hide();
-        const contentBox: HTMLDivElement = this.windowHelper.WindowContent().createContentBox('atohvt-content');
+        const contentBox: HTMLDivElement = this.windowHelper.WindowContent.createContentBox('atohvt-content');
         const btnContainer: HTMLDivElement = this.wGame.document.createElement('div');
         btnContainer.style.display = 'flex';
         const timeContainer: HTMLDivElement = this.wGame.document.createElement('div');
         timeContainer.style.display = 'flex';
-        timeContainer.style.marginBottom = '5px';
+        timeContainer.style.margin = '0 0 5px 4px';
 
         // Create input
-        const select: HTMLDivElement = this.inputHelper.Select().createSelect('atohvt-select', selectChoices);
-        const minTimeInput: HTMLDivElement = this.inputHelper.Input().createNumberInput('atohvt-minTime', 'Temps min : ', this.autoHarvest.minTime.toString());
-        const maxTimeInput: HTMLDivElement = this.inputHelper.Input().createNumberInput('atohvt-maxTime', 'Temps max : ', this.autoHarvest.maxTime.toString());
-        const start: HTMLDivElement = this.inputHelper.Button().createTextButton('atohvt-start-btn', 'Lancer', ButtonColor.PRIMARY, 'atohvt-btn');
-        const stop: HTMLDivElement = this.inputHelper.Button().createTextButton('atohvt-stop-btn', 'Arrêter', ButtonColor.SECONDARY, 'atohvt-btn');
-        this.inputHelper.Button().disabledButton(stop); // Disable stop button
+        const select: HTMLDivElement = this.inputHelper.Select.createSelect('atohvt-select', selectChoices);
+        const minTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-minTime', 
+            {label: 'Temps min : ', value: this.autoHarvest.minTime.toString(), inputClassName: 'atohvt-minTime'
+        });
+        const maxTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-maxTime', {label: 'Temps max : ', value: this.autoHarvest.maxTime.toString()});
+        const start: HTMLDivElement = this.inputHelper.Button.createTextButton('atohvt-start-btn', {
+            text: 'Lancer', color: ButtonColor.PRIMARY, customClassName: 'atohvt-btn'
+        });
+        const stop: HTMLDivElement = this.inputHelper.Button.createTextButton('atohvt-stop-btn', {
+            text: 'Arrêter', color: ButtonColor.SECONDARY, customClassName: 'atohvt-btn'
+        });
+        this.inputHelper.Button.disabledButton(stop); // Disable stop button
 
 
         // Add input to container
@@ -124,24 +133,24 @@ export class WindowAutoHarvest {
 
 
         // Add event to input
-        this.inputHelper.Button().addButtonEvent(start, () => {
+        this.inputHelper.Button.addButtonEvent(start, () => {
             this.autoHarvest.startAutoHarvest();
-            this.inputHelper.Button().disabledButton(start);
-            this.inputHelper.Button().enabledButton(stop);
+            this.inputHelper.Button.disabledButton(start);
+            this.inputHelper.Button.enabledButton(stop);
         });
-        this.inputHelper.Button().addButtonEvent(stop, () => {
+        this.inputHelper.Button.addButtonEvent(stop, () => {
             this.autoHarvest.stopAutoHarvest();
-            this.inputHelper.Button().disabledButton(stop);
-            this.inputHelper.Button().enabledButton(start);
+            this.inputHelper.Button.disabledButton(stop);
+            this.inputHelper.Button.enabledButton(start);
         });
-        this.inputHelper.Select().addSelectEvent(select, (choice) => {
+        this.inputHelper.Select.addSelectEvent(select, (choice) => {
             contentBox.getElementsByClassName('atohvt-show')[0].classList.remove('atohvt-show');
             this.wGame.document.getElementById('atohvt-job-' + choice.id).classList.add('atohvt-show');
         });
-        this.inputHelper.Input().addInputEvent(minTimeInput, (time) => {
+        this.inputHelper.Input.addInputEvent(minTimeInput, (time) => {
             this.autoHarvest.minTime = time;
         });
-        this.inputHelper.Input().addInputEvent(maxTimeInput, (time) => {
+        this.inputHelper.Input.addInputEvent(maxTimeInput, (time) => {
             this.autoHarvest.maxTime = time;
         });
     }
@@ -167,14 +176,16 @@ export class WindowAutoHarvest {
             // Create all checkBox for each skill
             elmntSkill.forEach((elmnt) => {
                 // Create checkBox and define if enable or disabled
-                const checkBox: HTMLDivElement = this.inputHelper.Checkbox().createCheckbox('atohvt-skill-' + elmnt.skillId, elmnt.name, false, 'atohvt-checkBox');
-                if (!(+choices.id == 1) && !this.skillsCanUse.includes(+elmnt.skillId)) this.inputHelper.Checkbox().disabledCheckbox(checkBox);
+                const checkBox: HTMLDivElement = this.inputHelper.Checkbox.createCheckbox('atohvt-skill-' + elmnt.skillId, {
+                    text: elmnt.name, isCheck: false, customClass: 'atohvt-checkBox'
+                });
+                if (!(+choices.id == 1) && !this.skillsCanUse.includes(+elmnt.skillId)) this.inputHelper.Checkbox.disabledCheckbox(checkBox);
 
                 // Insert in checkBox container
                 checkBoxContainer.append(checkBox);
 
                 // Add event to checkBox
-                this.inputHelper.Checkbox().addCheckboxEvent(checkBox, (isCheck) => {
+                this.inputHelper.Checkbox.addCheckboxEvent(checkBox, (isCheck) => {
                     if (isCheck) this.autoHarvest.addSkillToUse(elmnt.skillId);
                     else this.autoHarvest.removeSkillToUse(elmnt.skillId);
                 });
@@ -204,7 +215,7 @@ export class WindowAutoHarvest {
      */
     private addJobSkill(jobSkill: number) {
         const checkbox: HTMLDivElement = this.wGame.document.getElementById('atohvt-skill-' + jobSkill);
-        this.inputHelper.Checkbox().enabledCheckbox(checkbox);
+        this.inputHelper.Checkbox.enabledCheckbox(checkbox);
         this.skillsCanUse.push(jobSkill);
     }
 
@@ -240,6 +251,7 @@ export class WindowAutoHarvest {
         WindowAutoHarvest.instance = null;
     }
 }
+
 
 const selectChoices = 
 [
