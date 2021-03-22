@@ -19,6 +19,9 @@ export class AutoHarvest extends Mod {
     private isLoading: boolean = false;
     private changeMap: boolean = false;
 
+    public minTime: number = 1;
+    public maxTime: number = 2;
+
     private autoHarvestWindow: WindowAutoHarvest;
 
     startMod(): void {
@@ -67,7 +70,7 @@ export class AutoHarvest extends Mod {
                 console.log('UseInteractive -> elementId : ', interactive.elementId);
                 this.wGame.isoEngine.queueUseInteractive(interactive.elementId, interactive.skillInstanceUid);
                 this.isInHarvest.status = true; 
-            }, this.getRandomTime(1,2));
+            }, this.getRandomTime(this.minTime, this.maxTime));
         }
     }
 
@@ -129,6 +132,22 @@ export class AutoHarvest extends Mod {
 
         if (this.waitingInteractives.length > 1) setTimeout(() => this.sortByEstimateDistance(), 200);
         else this.isLoading = false;
+    }
+
+    /**
+     * This function is use for load interactives and statedElements from client data.
+     * Transform client data for use with websocket function
+     */
+    private loadInteractiveListFromLocalData() {
+        const interactives: any = this.wGame.isoEngine.mapRenderer.interactiveElements;
+        const interactiveElements: Array<any> = [];
+        const statedElements: Array<any> = [];
+
+        // Transform local data to match with data receive by websocket
+        for (let i in interactives) { interactiveElements.push(interactives[i]); }
+        this.wGame.isoEngine.mapRenderer.statedElements.forEach((s) => statedElements.push({elementId: s.id, elementCellId: s._position}));
+
+        this.loadInteractiveList(interactiveElements, statedElements);
     }
 
     private sortByEstimateDistance() {
@@ -210,6 +229,9 @@ export class AutoHarvest extends Mod {
         this.onStatedElementUpdatedMessage()
         this.onChangeMapMessage();
 
+        // Get interactives
+        this.loadInteractiveListFromLocalData();
+
         // Start loop
         this.checkForAwaitingInteractives();
         return true;
@@ -224,7 +246,6 @@ export class AutoHarvest extends Mod {
 
     public addSkillToUse(skillId: number) {
         this.skillsToUse.push(+skillId);
-        console.log('SkillToUse: ',this.skillsToUse);
     }
 
     public removeSkillToUse(skillId: number) {
@@ -252,9 +273,8 @@ export class AutoHarvest extends Mod {
     }
 
     public reset() {
-        console.log('Reset mod !');
         this.autoHarvestWindow.reset();
-        console.log('AutoHarvestWindow : ', this.autoHarvestWindow);
+        this.startAutoHarvest();
     }
     
 }

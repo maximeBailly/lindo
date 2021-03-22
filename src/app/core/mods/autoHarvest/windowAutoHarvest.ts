@@ -38,7 +38,7 @@ export class WindowAutoHarvest {
         autoHarvestCss.id = 'resourcesBoxCss';
         autoHarvestCss.innerHTML = `
             #autoHarvestWindow {
-                min-width: 500px; min-height: 370px;
+                min-width: 500px; min-height: 400px;
                 left: calc(50vw - 250px);
                 top: calc(50vh - 200px);
             }
@@ -65,25 +65,48 @@ export class WindowAutoHarvest {
         this.shortcutsHelper = new ShortcutsHelper(this.wGame);
         this.shortcutsHelper.bind(/*this.params.auto_harvest_shortcut*/'y', () => this.toggle() );
 
-        // TODO Optimize this !!!
-        setTimeout(() => {
-            this.getJobsSkills();
-            setTimeout(() => {
-                this.createWindow();
-                console.log('AutoHarvestWindow created !')
-            }, 2000);
-        }, 4000);
+        this.wGame.dofus.connectionManager.on('JobLevelUpMessage', this.onJobLevelUp);
+
+        this.init();
     }
 
+    /**
+     * Initialize the window after job skill was get
+     * @param tryCount Only for use in function
+     */
+    private init(tryCount?: number) {
+        if (!tryCount) tryCount = 0;
+        const listJobs: Array<number> = this.wGame.gui.playerData.jobs.jobOriginalOrder;
+
+        if (tryCount && tryCount > 25) {
+            console.log('Error, AutoHarvestWindow can\'t get jobsSkills...');
+            return;
+        }
+
+        if (listJobs == undefined) setTimeout(() => this.init(tryCount+1), 100);
+        else {
+            this.getJobsSkills(listJobs);
+            this.createWindow();
+        }
+    }
+
+    /**
+     * Create the window and add event to input
+     */
     private createWindow() {
         // Create container
         this.window.createDofusWindow('Récolte Automatique', 'autoHarvestWindow').makeDraggable().hide();
         const contentBox: HTMLDivElement = this.windowHelper.WindowContent().createContentBox('atohvt-content');
         const btnContainer: HTMLDivElement = this.wGame.document.createElement('div');
         btnContainer.style.display = 'flex';
+        const timeContainer: HTMLDivElement = this.wGame.document.createElement('div');
+        timeContainer.style.display = 'flex';
+        timeContainer.style.marginBottom = '5px';
 
         // Create input
         const select: HTMLDivElement = this.inputHelper.Select().createSelect('atohvt-select', selectChoices);
+        const minTimeInput: HTMLDivElement = this.inputHelper.Input().createNumberInput('atohvt-minTime', 'Temps min : ', this.autoHarvest.minTime.toString());
+        const maxTimeInput: HTMLDivElement = this.inputHelper.Input().createNumberInput('atohvt-maxTime', 'Temps max : ', this.autoHarvest.maxTime.toString());
         const start: HTMLDivElement = this.inputHelper.Button().createTextButton('atohvt-start-btn', 'Lancer', ButtonColor.PRIMARY, 'atohvt-btn');
         const stop: HTMLDivElement = this.inputHelper.Button().createTextButton('atohvt-stop-btn', 'Arrêter', ButtonColor.SECONDARY, 'atohvt-btn');
         this.inputHelper.Button().disabledButton(stop); // Disable stop button
@@ -91,7 +114,8 @@ export class WindowAutoHarvest {
 
         // Add input to container
         btnContainer.append(start, stop);
-        contentBox.append(btnContainer);
+        timeContainer.append(minTimeInput, maxTimeInput);
+        contentBox.append(timeContainer, btnContainer);
         this.window.addContent(select)
                    .addContent(contentBox);
 
@@ -114,8 +138,18 @@ export class WindowAutoHarvest {
             contentBox.getElementsByClassName('atohvt-show')[0].classList.remove('atohvt-show');
             this.wGame.document.getElementById('atohvt-job-' + choice.id).classList.add('atohvt-show');
         });
+        this.inputHelper.Input().addInputEvent(minTimeInput, (time) => {
+            this.autoHarvest.minTime = time;
+        });
+        this.inputHelper.Input().addInputEvent(maxTimeInput, (time) => {
+            this.autoHarvest.maxTime = time;
+        });
     }
 
+    /**
+     * Create checkbox for each skill and push to an categories container
+     * @param contentBox The global container
+     */
     private createCheckBox(contentBox: HTMLDivElement) {
         selectChoices.forEach((choices) => {
             // Create checkbox container
@@ -148,8 +182,11 @@ export class WindowAutoHarvest {
         });
     }
 
-    private getJobsSkills() {
-        const listJobs: Array<number> = this.wGame.gui.playerData.jobs.jobOriginalOrder;
+    /**
+     * Get all know skill of the player
+     * @param listJobs List of job learn by the player
+     */
+    private getJobsSkills(listJobs: Array<number>) {
         listJobs.forEach(jobId => {
             const job = this.wGame.gui.playerData.jobs.list[jobId];
 
@@ -161,6 +198,34 @@ export class WindowAutoHarvest {
         });
     }
 
+    /**
+     * Enable the checkbox associate to jobSkill
+     * @param jobSkill The skill to add
+     */
+    private addJobSkill(jobSkill: number) {
+        const checkbox: HTMLDivElement = this.wGame.document.getElementById('atohvt-skill-' + jobSkill);
+        this.inputHelper.Checkbox().enabledCheckbox(checkbox);
+        this.skillsCanUse.push(jobSkill);
+    }
+
+
+    /**
+     * Function to execute when a job level up
+     * @param e The receive data
+     */
+    private onJobLevelUp = (e) => {
+        let skills: Array<any> = e.jobsDescription.skills;
+        skills = skills.filter((skill) => skill.type == 'SkillActionDescriptionCollect' && skill.max < 4);
+
+        skills.forEach((skill) => {
+            if (!this.skillsCanUse.includes(skill.skillId)) this.addJobSkill(skill.skillId);
+        });
+    };
+    
+
+    /**
+     * Show or hide window
+     */
     private toggle() {
         if (this.window.isVisible()) {
             this.window.hide();
@@ -170,8 +235,9 @@ export class WindowAutoHarvest {
     }
 
     public reset() {
-        //WindowAutoHarvest.instance = null;
-        // TODO Destroy window
+        this.window.destroy();
+        this.wGame.dofus.connectionManager.removeListener('JobLevelUpMessage', this.onJobLevelUp);
+        WindowAutoHarvest.instance = null;
     }
 }
 
