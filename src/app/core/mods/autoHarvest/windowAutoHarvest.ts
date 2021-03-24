@@ -35,7 +35,7 @@ export class WindowAutoHarvest {
         this.inputHelper = this.windowHelper.getInputsHelper;
 
         let autoHarvestCss = document.createElement('style');
-        autoHarvestCss.id = 'resourcesBoxCss';
+        autoHarvestCss.id = 'autoHarvestCss';
         autoHarvestCss.innerHTML = `
             #autoHarvestWindow {
                 min-width: 500px; min-height: 400px;

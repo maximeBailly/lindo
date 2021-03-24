@@ -62,12 +62,7 @@ export class ShowResources extends Mod {
 
             this.on(this.wGame.dofus.connectionManager, 'MapComplementaryInformationsDataMessage', (e: any) => this.onMapComplementaryInfos(e.interactiveElements, e.statedElements));
             this.on(this.wGame.dofus.connectionManager, 'StatedElementUpdatedMessage', ({statedElement}) => this.onStatedElementUpdated(statedElement));
-            this.on(this.wGame.dofus.connectionManager, 'GameFightStartingMessage', () => {
-                if (this.enabled) {
-                    this.isHide = true;
-                    this.toggle();
-                }
-            });
+            this.on(this.wGame.dofus.connectionManager, 'GameFightStartingMessage', () => { if (this.enabled) this.toggle(); });
 
             setTimeout(() => this.loadMapInfoOnStart(), 100);
         }
@@ -153,7 +148,8 @@ export class ShowResources extends Mod {
     }
 
     private create() {
-        if (this.isHide) this.isHide = false;
+        this.isHide = false;
+        this.enabled = true;
 
         this.resourcesBox = this.wGame.document.createElement('div');
         this.resourcesBox.id = 'resourcesBox';
@@ -188,6 +184,8 @@ export class ShowResources extends Mod {
     }
 
     private clearHtml() {
+        this.isHide = true;
+        if (this.resourcesBox) this.resourcesBox.remove();
         if (this.resourcesBox && this.resourcesBox.parentElement) this.resourcesBox.parentElement.removeChild(this.resourcesBox);
     }
 
