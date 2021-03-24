@@ -2,11 +2,13 @@ import { NgZone } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import * as EventEmitter from 'eventemitter3';
 import { ElectronService as electron } from "app/core/electron/electron.service";
+const axios = require('axios');
 
 import { Mod } from "../mod";
 
 export class Notifications extends Mod {
     public eventEmitter: EventEmitter;
+    private ressourcesKnow: Array<string> = [];
 
     startMod(): void {
         this.eventEmitter = new EventEmitter();
@@ -38,11 +40,17 @@ export class Notifications extends Mod {
     private async sendHdvSaleNotif(e: any) {
         if (!this.wGame.document.hasFocus() && this.params.sale_message) {
             if (e.msgId == 65) {
+                const id = e.parameters[1];
 
                 this.eventEmitter.emit('newNotification');
 
+                if (this.ressourcesKnow[id] == null) {
+                    const res = await axios.post('https://proxyconnection.touch.dofus.com/data/map?lang=fr&v=1.49.9', {class: "Items", ids: [id]});
+                    this.ressourcesKnow[id] = res.data[id].nameId;
+                }
+
                 let saleNotif = new Notification(this.translate.instant('app.notifications.sale-message'), {
-                    body: '+' + e.parameters[0] + ' kamas'
+                    body: `+ ${e.parameters[0]} Kamas (vente de ${e.parameters[3]} ${this.ressourcesKnow[id]})`
                 });
 
                 saleNotif.onclick = () => {
