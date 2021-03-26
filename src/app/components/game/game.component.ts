@@ -87,6 +87,7 @@ export class GameComponent implements AfterViewInit {
         for (let i in this.mods) {
             this.mods[i].reset();
         }
+        this.mods = [];
     }
 
     public reloadMods(start: boolean = true): void {
