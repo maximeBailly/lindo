@@ -11,7 +11,19 @@ export class AutoPass extends Mod {
     startMod(): void {
         Logger.info('- Enable AutoPass');
 
-        this.insertStyleTag();
+        let autoPassCss = document.createElement('style');
+        autoPassCss.id = 'autoPassCss';
+        autoPassCss.innerHTML = `
+            .auto-pass-container {
+                position: absolute;
+                z-index: 2;
+                top: 0;
+                right: 0;
+                min-height: 20px;
+                min-width: 50px;
+                background-color: rgba(0,0,0,0.7);
+            }`;
+        this.wGame.document.querySelector('head').appendChild(autoPassCss);
 
         this.on(this.wGame.dofus.connectionManager, 'GameFightStartingMessage', () => this.insertComponent());
         this.on(this.wGame.dofus.connectionManager, 'GameFightEndMessage', () => this.remove());
@@ -24,22 +36,6 @@ export class AutoPass extends Mod {
                 this.wGame.dofus.sendMessage('GameFightTurnFinishMessage', {});
             }, this.getRandomTime(1,3));
         }
-    }
-
-    private insertStyleTag() {
-        this.styleTag = this.wGame.document.createElement('style');
-        this.wGame.document.getElementsByTagName('head')[0].appendChild(this.styleTag);
-
-        this.styleTag.innerHTML += `
-        .auto-pass-container {
-            position: absolute;
-            z-index: 2;
-            top: 0;
-            right: 0;
-            min-height: 20px;
-            min-width: 50px;
-            background-color: rgba(0,0,0,0.7);
-        }`;
     }
 
     private insertComponent() {
@@ -68,6 +64,7 @@ export class AutoPass extends Mod {
 
     public reset() {
         super.reset();
+        this.wGame.document.getElementById('autoPassCss').remove();
         this.remove();
     }
 }
