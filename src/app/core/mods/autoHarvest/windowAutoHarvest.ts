@@ -10,7 +10,7 @@ export class WindowAutoHarvest {
 
     private wGame: any|Window;
     private params: any;
-    private autoHarvest: AutoHarvest;
+    public autoHarvest: AutoHarvest;
 
     private windowHelper: CustomWindowHelper;
     private window: DraggableWindowHelper;
@@ -18,13 +18,14 @@ export class WindowAutoHarvest {
     private shortcutsHelper: ShortcutsHelper;
 
     private skillsCanUse: Array<number> = [];
+    private select: HTMLDivElement;
 
     public static getInstance(wGame: any|Window, params: any, autoHarvest: AutoHarvest): WindowAutoHarvest {
         if (!this.instance) return new WindowAutoHarvest(wGame, params, autoHarvest);
         return this.instance;
     }
 
-    private constructor(wGame: any|Window, params: any, autoHarvest: AutoHarvest) {
+    constructor(wGame: any|Window, params: any, autoHarvest: AutoHarvest) {
         this.wGame = wGame;
         this.params = params;
         this.autoHarvest = autoHarvest;
@@ -109,9 +110,10 @@ export class WindowAutoHarvest {
         // Create input
         const select: HTMLDivElement = this.inputHelper.Select.createSelect('atohvt-select', selectChoices);
         const minTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-minTime', 
-            {label: 'Temps min : ', value: this.autoHarvest.minTime.toString(), inputClassName: 'atohvt-minTime'
+            {label: 'Temps min : ', value: this.autoHarvest.minTime ? this.autoHarvest.minTime.toString() : '1', inputClassName: 'atohvt-minTime'
         });
-        const maxTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-maxTime', {label: 'Temps max : ', value: this.autoHarvest.maxTime.toString()});
+        const maxTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-maxTime',
+            {label: 'Temps max : ', value: this.autoHarvest.maxTime ? this.autoHarvest.maxTime.toString() : '2'});
         const start: HTMLDivElement = this.inputHelper.Button.createTextButton('atohvt-start-btn', {
             text: 'Lancer', color: ButtonColor.PRIMARY, customClassName: 'atohvt-btn'
         });
@@ -153,6 +155,8 @@ export class WindowAutoHarvest {
         this.inputHelper.Input.addInputEvent(maxTimeInput, (time) => {
             this.autoHarvest.maxTime = time;
         });
+
+        this.select = select;
     }
 
     /**
@@ -246,6 +250,7 @@ export class WindowAutoHarvest {
     }
 
     public reset() {
+        this.inputHelper.Select.removeSelect(this.select);
         this.window.destroy();
         this.wGame.dofus.connectionManager.removeListener('JobLevelUpMessage', this.onJobLevelUp);
         WindowAutoHarvest.instance = null;

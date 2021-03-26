@@ -274,7 +274,7 @@ export class AutoHarvest extends Mod {
 
     public reset() {
         this.autoHarvestWindow.reset();
-        this.startAutoHarvest();
+        this.stopAutoHarvest();
     }
     
 }
