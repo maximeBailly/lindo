@@ -68,8 +68,12 @@ export class AutoHarvest extends Mod {
 
             this.delayedUseInteractive = setTimeout(() => {
                 console.log('UseInteractive -> elementId : ', interactive.elementId);
-                this.wGame.isoEngine.queueUseInteractive(interactive.elementId, interactive.skillInstanceUid);
-                this.isInHarvest.status = true; 
+                try {
+                    this.wGame.isoEngine.queueUseInteractive(interactive.elementId, interactive.skillInstanceUid);
+                } catch {
+                    console.error('Can\'t use this interactive :', interactive);
+                }
+                this.isInHarvest.status = true;
             }, this.getRandomTime(this.minTime, this.maxTime));
         }
     }
