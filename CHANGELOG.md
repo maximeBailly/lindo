@@ -1,23 +1,40 @@
 ## ⚠ ATTENTION, VÉRIFIEZ QUE VOUS TÉLÉCHARGEZ LINDO DEPUIS LINDO.NO-EMU.CO
 ## ⚠ CERTAINS SITES MALVEILLANTS INSTALLERONT UN VIRUS SUR VOTRE ORDINATEUR
 
+## [2.6.0 Custom] - 2021-03-29
+
+### Ajouts
+- Ajout d'un écran pour activer l'auto-récolte et choisir les ressources ciblés
+- (Dev) Ajout d'helper pour créer des fenêtres et input avec le style de DT
+- Suite à la MAJ de DofusTouch le 13/04, la barre de texte dans le chat à été replacé en bas
+- Le nom de l'alliance dans les coordonnées est désormais masqué
+
+### Améliorations
+- Les notifications de ventes contiennent désormais le nom de l'item et la quantité vendue
+- Le CSS de plusieurs mods n'est plus ajouté plusieurs fois lors du reload des mods
+- Le CSS des mods ShowResources et JobsXp à été modifier pour s'accorder avec le style de dofus
+
+### Correctifs
+- L'auto-récolte ne plante plus quand une ressource n'a pas pu être récolté
+- Le mod ShowResource ne bug plus lors que la configuration de lindo est changé en jeu
+
 ## [2.6.0] - 2021-02-25
 
 ### Ajouts
-- Ajout d'une icone sur les membres de groupes pour savoir s'il sont sur la meme map
-- Ajout de favoris pour les zaaps
-- Ajout d'un affichage des ressourses presentes sur la carte
+ - Ajout d'une icone sur les membres de groupes pour savoir s'il sont sur la meme map
+ - Ajout de favoris pour les zaaps
+ - Ajout d'un affichage des ressourses presentes sur la carte
 
 ### Améliorations
-- Ajout de l'icone dans le build .deb
+ - Ajout de l'icone dans le build .deb
 
 ### Correctifs
-- Crash de Lindo avec le déplacement rapide lorsque la case est inaccessible
+ - Crash de Lindo avec le déplacement rapide lorsque la case est inaccessible
+
 
 ## [2.5.3 Custom] - 2020-11-30
 
 ### Ajouts
-
  - Ajout d'une notification lors de la vente d'un item
  - Ajout d'une barre sous chaque ressource utilisée permettant de visualiser le temps restant
  - Ajout de bulles d'informations sur les groupes de monstre
