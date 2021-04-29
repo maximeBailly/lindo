@@ -43,7 +43,7 @@ export class AutoHarvest extends Mod {
 
                 if (this.waitingInteractives.length > 1) {
                     this.isLoading = true;
-                    setTimeout(() => this.sortByEstimateDistance(), 200);
+                    this.sortByEstimateDistance().then(() => this.isLoading = false);
                 }
             }
         }, 500);
@@ -82,7 +82,7 @@ export class AutoHarvest extends Mod {
      * Create and add interactive to waiting list
      * @param interactiveElement Interactive to add
      */
-    private addInteractiveToWaitingList(interactiveElement: any) {
+    private async addInteractiveToWaitingList(interactiveElement: any) {
 
         if ((interactiveElement.enabledSkills != null && interactiveElement.enabledSkills.length > 0)
             && (!this.waitingInteractives.find(a => a.elementId == interactiveElement.elementId) || !(this.usedInteractive.elementId == interactiveElement.elementId))) {
@@ -125,24 +125,25 @@ export class AutoHarvest extends Mod {
      * @param interactiveElements Interactives received by websocket
      * @param statedElements StatedElements received by websocket
      */
-    private loadInteractiveList(interactiveElements: any, statedElements: any) {
+    private async loadInteractiveList(interactiveElements: any, statedElements: any) {
         this.isLoading = true;
         this.statedElements = statedElements;
 
         this.clear();
-        interactiveElements.forEach((interactiveElement) => {
-            this.addInteractiveToWaitingList(interactiveElement);
+        interactiveElements.forEach(async (interactiveElement) => {
+            await this.addInteractiveToWaitingList(interactiveElement);
         });
 
-        if (this.waitingInteractives.length > 1) setTimeout(() => this.sortByEstimateDistance(), 200);
-        else this.isLoading = false;
+        if (this.waitingInteractives.length > 1) await this.sortByEstimateDistance();
+        this.isLoading = false;
     }
+    
 
     /**
      * This function is use for load interactives and statedElements from client data.
      * Transform client data for use with websocket function
      */
-    private loadInteractiveListFromLocalData() {
+    private async loadInteractiveListFromLocalData() {
         const interactives: any = this.wGame.isoEngine.mapRenderer.interactiveElements;
         const interactiveElements: Array<any> = [];
         const statedElements: Array<any> = [];
@@ -151,10 +152,10 @@ export class AutoHarvest extends Mod {
         for (let i in interactives) { interactiveElements.push(interactives[i]); }
         this.wGame.isoEngine.mapRenderer.statedElements.forEach((s) => statedElements.push({elementId: s.id, elementCellId: s._position}));
 
-        this.loadInteractiveList(interactiveElements, statedElements);
+        await this.loadInteractiveList(interactiveElements, statedElements);
     }
 
-    private sortByEstimateDistance() {
+    private async sortByEstimateDistance() {
         const actorPosX: number = this.wGame.isoEngine.actorManager.userActor.x;
         const actorPosY: number = this.wGame.isoEngine.actorManager.userActor.y;
 
@@ -162,7 +163,6 @@ export class AutoHarvest extends Mod {
             Math.ceil(Math.sqrt(Math.pow(a.posX - actorPosX, 2) + Math.pow(a.posY - actorPosY, 2)))
             - Math.ceil(Math.sqrt(Math.pow(b.posX - actorPosX, 2) + Math.pow(b.posY - actorPosY, 2)))
         );
-        this.isLoading = false;
     }
 
     private checkAllCondition(): boolean {
@@ -209,15 +209,16 @@ export class AutoHarvest extends Mod {
     }
 
     private onChangeMapMessage() {
-        this.on(this.wGame.dofus.connectionManager, 'send', (e: any) => { if (e.data.data == 'ChangeMapMessage') this.changeMap = true; });
+        this.on(this.wGame.dofus.connectionManager, 'send', (e: any) => { if (e.data.data != null && e.data.data.type == 'ChangeMapMessage') this.changeMap = true; });
     }
 
     private onGameMapChange() {
         this.on(this.wGame.dofus.connectionManager, 'MapComplementaryInformationsDataMessage', (e: any) => {
-            this.loadInteractiveList(e.interactiveElements, e.statedElements);
-            setTimeout(() => {
-                this.changeMap = false;
-            }, 500);
+                setTimeout(() => {
+                    this.loadInteractiveList(e.interactiveElements, e.statedElements).then(() => {
+                        this.changeMap = false;
+                    });
+                }, 2000);
         });
     }
 
@@ -260,6 +261,10 @@ export class AutoHarvest extends Mod {
 
     /* Utils function */
 
+    /**
+     * Remove specified interactive in the waitingInteractives array
+     * @param elementId The id of element to remove
+     */
     private deleteWaitingInteractive(elementId: number) {
         const elementToRemove: InteractiveElement = this.waitingInteractives.find(e => e.elementId == elementId);
         const index: number = this.waitingInteractives.indexOf(elementToRemove, 0);
