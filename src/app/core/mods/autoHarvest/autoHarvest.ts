@@ -3,7 +3,7 @@ import { Mod } from "../mod";
 import { WindowAutoHarvest } from "./windowAutoHarvest";
 
 export class AutoHarvest extends Mod {
-    private readonly STATE_USE: number = 2;
+    private actorId: number;
 
     private statedElements: any[];
     private waitingInteractives: Array<InteractiveElement> = new Array();
@@ -155,15 +155,6 @@ export class AutoHarvest extends Mod {
 
     /* Listener function */
 
-    private onStatedElementUpdatedMessage() {
-        this.on(this.wGame.dofus.connectionManager, 'StatedElementUpdatedMessage', (e: any) => {
-            if (this.waitingInteractives.find(a => a.elementId == e.statedElement.elementId) && e.statedElement.elementState == this.STATE_USE) {
-                console.log('StatedElementUpdatedMessage -> Remove element ' + e.statedElement.elementId + ' already used...');
-                this.deleteWaitingInteractive(e.statedElement.elementId);
-            }
-        });
-    }
-
     private onInventoryWeightMessage() {
         this.on(this.wGame.dofus.connectionManager, 'InventoryWeightMessage', (e: any) => {
             try {
@@ -180,13 +171,23 @@ export class AutoHarvest extends Mod {
         this.on(this.wGame.dofus.connectionManager, 'InteractiveElementUpdatedMessage', (e: any) => {
             if (e.interactiveElement.enabledSkills.length > 0)
                 this.addInteractiveToWaitingList(e.interactiveElement).then(() => {
-                    console.log('[Debug] delayedUseInterative : ', this.delayedUseInteractive);
-                    if (!this.delayedUseInteractive)
-                        this.delayedUseInteractive = setTimeout(() => {
-                            this.useInterative();
-                            this.delayedUseInteractive = null;
-                        }, this.getRandomTime(this.minTime, this.maxTime));
+                    console.log('[Debug] delayedUseInterative');
+                    this.delayedUseInteractive = setTimeout(() => this.useInterative(), this.getRandomTime(this.minTime, this.maxTime));
                 });
+        });
+    }
+
+    private onInteractiveUsedMessage() {
+        this.on(this.wGame.dofus.connectionManager, 'InteractiveUsedMessage', (e: any) => {
+            if (this.waitingInteractives.find(a => a.elementId == e.elemId) && this.actorId != e.entityId) {
+                console.log('StatedElementUpdatedMessage -> Remove element ' + e.elemId + ' already used...');
+                this.deleteWaitingInteractive(e.elemId);
+            }
+            else if (this.usedInteractive && this.usedInteractive.elementId == e.elemId && this.actorId != e.entityId) {
+                console.log('[Debug] Someone else took this interactive before you...');
+                this.deleteUseInteractiveAtEnd(e.elemId);
+                this.useInterative();
+            }
         });
     }
 
@@ -201,7 +202,7 @@ export class AutoHarvest extends Mod {
         });
     }
 
-    private onChangeMapMessage() {
+    private onSendChangeMapMessage() {
         this.on(this.wGame.dofus.connectionManager, 'send', (e: any) => { if (e.data.data != null && e.data.data.type == 'ChangeMapMessage') this.changeMap = true; });
     }
 
@@ -212,7 +213,7 @@ export class AutoHarvest extends Mod {
                         this.changeMap = false;
                         this.useInterative();
                     });
-                }, 2000);
+                }, 2500);
         });
     }
 
@@ -220,13 +221,16 @@ export class AutoHarvest extends Mod {
     /* Shared methods */
 
     public startAutoHarvest(): boolean {
+        // Init global var
+        this.actorId = this.wGame.isoEngine.actorManager.userId;
+
         // Start Listener
         this.onGameMapChange();
         this.onInteractiveElementUpdate();
         this.onInteractiveUseEndedMessage();
         this.onInventoryWeightMessage();
-        this.onStatedElementUpdatedMessage()
-        this.onChangeMapMessage();
+        this.onInteractiveUsedMessage();
+        this.onSendChangeMapMessage();
 
         // Get interactives
         this.loadInteractiveListFromLocalData();

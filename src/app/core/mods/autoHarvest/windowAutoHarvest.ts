@@ -109,11 +109,12 @@ export class WindowAutoHarvest {
 
         // Create input
         const select: HTMLDivElement = this.inputHelper.Select.createSelect('atohvt-select', selectChoices);
-        const minTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-minTime', 
-            {label: 'Temps min : ', value: this.autoHarvest.minTime ? this.autoHarvest.minTime.toString() : '1', inputClassName: 'atohvt-minTime'
+        const minTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-minTime', {
+            label: 'Temps min : ', value: this.autoHarvest.minTime ? this.autoHarvest.minTime.toString() : '1', inputClassName: 'atohvt-minTime'
         });
-        const maxTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-maxTime',
-            {label: 'Temps max : ', value: this.autoHarvest.maxTime ? this.autoHarvest.maxTime.toString() : '2'});
+        const maxTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-maxTime', {
+            label: 'Temps max : ', value: this.autoHarvest.maxTime ? this.autoHarvest.maxTime.toString() : '2'
+        });
         const start: HTMLDivElement = this.inputHelper.Button.createTextButton('atohvt-start-btn', {
             text: 'Lancer', color: ButtonColor.PRIMARY, customClassName: 'atohvt-btn'
         });
@@ -138,12 +139,16 @@ export class WindowAutoHarvest {
         this.inputHelper.Button.addButtonEvent(start, () => {
             this.autoHarvest.startAutoHarvest();
             this.inputHelper.Button.disabledButton(start);
+            this.inputHelper.Button.changeButtonColor(start, ButtonColor.SECONDARY);
             this.inputHelper.Button.enabledButton(stop);
+            this.inputHelper.Button.changeButtonColor(stop, ButtonColor.PRIMARY);
         });
         this.inputHelper.Button.addButtonEvent(stop, () => {
             this.autoHarvest.stopAutoHarvest();
             this.inputHelper.Button.disabledButton(stop);
+            this.inputHelper.Button.changeButtonColor(stop, ButtonColor.SECONDARY);
             this.inputHelper.Button.enabledButton(start);
+            this.inputHelper.Button.changeButtonColor(start, ButtonColor.PRIMARY);
         });
         this.inputHelper.Select.addSelectEvent(select, (choice) => {
             contentBox.getElementsByClassName('atohvt-show')[0].classList.remove('atohvt-show');
