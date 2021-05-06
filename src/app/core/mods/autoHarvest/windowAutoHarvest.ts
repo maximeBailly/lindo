@@ -206,16 +206,24 @@ export class WindowAutoHarvest {
      * Get all know skill of the player
      * @param listJobs List of job learn by the player
      */
-    private getJobsSkills(listJobs: Array<number>) {
-        listJobs.forEach(jobId => {
-            const job = this.wGame.gui.playerData.jobs.list[jobId];
+    private getJobsSkills(listJobs: Array<number>, nbrTry?: number) {
+        nbrTry = nbrTry ? nbrTry : 1;
 
-            job.description.skills.forEach(skill => {
-                if (skill._type == 'SkillActionDescriptionCollect') {
-                    this.skillsCanUse.push(skill.skillId);
-                }
+        if (this.wGame.gui.playerData && this.wGame.gui.playerData.jobs && this.wGame.gui.playerData.jobs.list
+            && Object.keys(this.wGame.gui.playerData.jobs.list).length > 0) {
+
+            listJobs.forEach(jobId => {
+                const job = this.wGame.gui.playerData.jobs.list[jobId];
+    
+                job.description.skills.forEach(skill => {
+                    if (skill._type == 'SkillActionDescriptionCollect') this.skillsCanUse.push(skill.skillId);
+                });
             });
-        });
+
+            if (nbrTry > 1) this.skillsCanUse.forEach(skillId => this.addJobSkill(skillId));
+        }
+        else if (nbrTry < 15) setTimeout(() => this.getJobsSkills(listJobs, nbrTry+1), 200);
+        else console.log('[Error] Can\'t get jobs list...');
     }
 
     /**
