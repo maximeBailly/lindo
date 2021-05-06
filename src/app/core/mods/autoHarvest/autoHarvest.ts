@@ -115,7 +115,6 @@ export class AutoHarvest extends Mod {
             let interactive: InteractiveElement = this.waitingInteractives.shift();
             this.usedInteractive = interactive;
             this.isInHarvest.elemId = interactive.elementId;
-
             
             console.log('UseInteractive -> elementId : ', interactive.elementId);
             try {
@@ -181,6 +180,12 @@ export class AutoHarvest extends Mod {
         this.on(this.wGame.dofus.connectionManager, 'InteractiveUsedMessage', (e: any) => {
             if (this.waitingInteractives.find(a => a.elementId == e.elemId) && this.actorId != e.entityId) {
                 console.log('StatedElementUpdatedMessage -> Remove element ' + e.elemId + ' already used...');
+                this.deleteWaitingInteractive(e.elemId);
+            }
+            else if (this.waitingInteractives.find(a => a.elementId == e.elemId) && this.actorId == e.entityId) {
+                console.log('StatedElementUpdatedMessage -> Remove element ' + e.elemId + ' you take the control');
+                this.waitingInteractives.push(this.usedInteractive);
+                this.usedInteractive = this.waitingInteractives.find(a => a.elementId == e.elemId);
                 this.deleteWaitingInteractive(e.elemId);
             }
             else if (this.usedInteractive && this.usedInteractive.elementId == e.elemId && this.actorId != e.entityId) {
