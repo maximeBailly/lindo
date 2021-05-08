@@ -87,7 +87,7 @@ export class AutoHarvest extends Mod {
                                                     posX: pos != null ? pos.x : -1,
                                                     posY: pos != null ? pos.y : -1}
 
-            if (this.skillsToUse.includes(interactive.skillId)) {
+            if (this.skillsToUse.includes(interactive.skillId) && interactive) {
                 this.waitingInteractives.push(interactive);
                 console.log('Add interactive : ', interactive.elementId);
             }
@@ -184,7 +184,7 @@ export class AutoHarvest extends Mod {
             }
             else if (this.waitingInteractives.find(a => a.elementId == e.elemId) && this.actorId == e.entityId) {
                 console.log('StatedElementUpdatedMessage -> Remove element ' + e.elemId + ' you take the control');
-                this.waitingInteractives.push(this.usedInteractive);
+                if (this.usedInteractive) this.waitingInteractives.push(this.usedInteractive);
                 this.usedInteractive = this.waitingInteractives.find(a => a.elementId == e.elemId);
                 this.deleteWaitingInteractive(e.elemId);
             }
