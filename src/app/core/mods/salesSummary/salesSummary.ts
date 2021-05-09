@@ -30,7 +30,7 @@ export class SalesSummary extends Mod {
         salesSummaryCss.innerHTML = `
             #sales-summary {
                 min-width: 600px; min-height: 60vh;
-                left: calc(50vw - 250px);
+                left: calc(50vw - 300px);
                 top: calc(50vh - 35vh);
             }
             .sls-smy-img, .sls-smy-img img {
