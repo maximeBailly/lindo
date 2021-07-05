@@ -50,9 +50,15 @@ export class PartyMember extends Mod{
             this.on(this.wGame.dofus.connectionManager, 'MapComplementaryInformationsDataMessage', (e: any) => this.updateMemberOnMapChange(e));
 
             // Use here init mod if player already have grp when mod start
-            this.updatePartyMembers();
+            this.checkIfPartyExist();
         }
     }
+
+    private checkIfPartyExist() {
+        if (this.wGame.gui.party.currentParty && this.wGame.gui.party.currentParty._childrenList.length > 0) {
+          this.updatePartyMembers();
+        }
+      }
 
     private updateDOM() {
         let i = 0;
@@ -105,9 +111,10 @@ export class PartyMember extends Mod{
     private updateMember(data: any, isOnMap: boolean) {
         if (this.wGame.gui.party.currentParty && this.wGame.gui.party.currentParty._childrenList.length > 0) {
             const playerId: number = isOnMap ? data.informations.contextualId : data.id;
-            if (this.members.has(playerId)) this.members.set(playerId, isOnMap);
-
-            this.updateDOM();
+            if (this.members.has(playerId)) {
+                this.members.set(playerId, isOnMap);
+                this.updateDOM();
+            }
         }
     }
 
@@ -136,7 +143,7 @@ export class PartyMember extends Mod{
     public reset() {
         super.reset();
         this.destroy();
-        const pmomCss = this.wGame.document.getElementById('pmomCss');
-        if (pmomCss && pmomCss.parentElement) pmomCss.parentElement.removeChild(pmomCss);
+        let pmomCss = this.wGame.document.getElementById('pmomCss');
+        if (pmomCss) pmomCss.remove();
     }
 }

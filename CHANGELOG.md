@@ -1,8 +1,6 @@
 ## ⚠ ATTENTION, VÉRIFIEZ QUE VOUS TÉLÉCHARGEZ LINDO DEPUIS LINDO-APP.COM
 ## ⚠ CERTAINS SITES MALVEILLANTS INSTALLERONT UN VIRUS SUR VOTRE ORDINATEUR
 
-## [2.6.0]
-
 ### Ajouts
 - Ajout d'une barre sous chaque ressource utilisée permettant de visualiser le temps restant
 - Ajout d'une icône sur les membres de groupes pour savoir s'il sont sur la même map

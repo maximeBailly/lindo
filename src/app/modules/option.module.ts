@@ -698,10 +698,11 @@ export namespace Option {
             private _hidden_mount: boolean;
             private _party_info_pp:boolean;
             private _party_info_lvl:boolean;
+            private _harvest_indicator: boolean;
             private _show_resources: boolean;
             private _show_resources_shortcut: string;
             private _party_member_on_map:boolean;
-            private _harvest_indicator: boolean;
+            private _dtmap_shortcut: string;
 
             get party_info_pp():boolean{
                 return this._party_info_pp;
@@ -793,6 +794,15 @@ export namespace Option {
                 this._health_bar_shortcut = health_bar_shortcut;
             }
 
+            get harvest_indicator(): boolean {
+                return this._harvest_indicator;
+            }
+
+            set harvest_indicator(harvest_indicator: boolean) {
+                this.settingsProvider.write('option.vip.general.harvest_indicator', harvest_indicator);
+                this._harvest_indicator = harvest_indicator;
+            }
+            
             get show_resources(): boolean {
                 return this._show_resources;
             }
@@ -820,13 +830,13 @@ export namespace Option {
                 this._party_member_on_map = party_member_on_map;
             }
 
-            get harvest_indicator(): boolean {
-                return this._harvest_indicator;
+            get dtmap_shortcut(): string {
+                return this._dtmap_shortcut;
             }
 
-            set harvest_indicator(harvest_indicator: boolean) {
-                this.settingsProvider.write('option.vip.general.harvest_indicator', harvest_indicator);
-                this._harvest_indicator = harvest_indicator;
+            set dtmap_shortcut(dtmap_shortcut: string) {
+                this.settingsProvider.write('option.vip.general.dtmap_shortcut', dtmap_shortcut);
+                this._dtmap_shortcut = dtmap_shortcut;
             }
 
             constructor(private settingsProvider: SettingsProvider) {
@@ -840,10 +850,12 @@ export namespace Option {
                 this.hidden_mount = this.settingsProvider.read('option.vip.general.hidden_mount');
                 this.party_info_pp = this.settingsProvider.read('option.vip.general.party_info_pp');
                 this.party_info_lvl = this.settingsProvider.read('option.vip.general.party_info_lvl');
+                this.harvest_indicator = this.settingsProvider.read('option.vip.general.harvest_indicator');
                 this.show_resources = this.settingsProvider.read('option.vip.general.show_resources');
                 this.show_resources_shortcut = this.settingsProvider.read('option.vip.general.show_resources_shortcut');
                 this.party_member_on_map = this.settingsProvider.read('option.vip.general.party_member_on_map');
                 this.harvest_indicator = this.settingsProvider.read('option.vip.general.harvest_indicator');
+                this._dtmap_shortcut = this.settingsProvider.read('option.vip.general.dtmap_shortcut');
             }
         }
 

@@ -12,6 +12,7 @@ import {ShortcutsOtherComponent} from "app/windows/main/menus/shortcuts/other/ot
 import {ShortcutsApplicationComponent} from "app/windows/main/menus/shortcuts/application/application.component";
 import {ShortcutsInventoryComponent} from "app/windows/main/menus/shortcuts/inventory/inventory.component";
 import {ShortcutsInterfaceComponent} from "app/windows/main/menus/shortcuts/interface/interface.component";
+import {ShortcutsModComponent} from "./windows/main/menus/shortcuts/mod/mod.component";
 import {ShortcutsSpellComponent} from "app/windows/main/menus/shortcuts/spell/spell.component";
 import {UpdateComponent} from "app/windows/update/update.component";
 import {AboutComponent} from "app/windows/main/menus/option/about/about.component";
@@ -45,7 +46,8 @@ const appRoutes: Routes = [
             { path: 'interface', component: ShortcutsInterfaceComponent },
             { path: 'spell', component: ShortcutsSpellComponent },
             { path: 'inventory', component: ShortcutsInventoryComponent },
-            { path: 'other', component: ShortcutsOtherComponent }
+            { path: 'other', component: ShortcutsOtherComponent },
+            { path: 'mod', component: ShortcutsModComponent}
         ]
     },
     {

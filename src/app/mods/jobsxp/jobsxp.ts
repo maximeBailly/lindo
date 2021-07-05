@@ -21,7 +21,6 @@ export class Jobsxp extends Mod{
             jobsxpbarCss.id = 'jobsxpbarCss';
             jobsxpbarCss.innerHTML = `
             .xpRestanteText {
-                box-sizing: border-box;
                 overflow: hidden;
                 font-size: 11px;
                 position: absolute;
@@ -31,31 +30,16 @@ export class Jobsxp extends Mod{
                 text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
                 right: 10px;
                 pointer-events: none;
-                padding: 5px 16px;
-            }
-
-            .xpRestanteText::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                border-image-source: url(./assets/ui/container.png);
-                border-image-slice: 63;
-                border-image-width: 37px;
-                border-radius: 10px;
-                border-style: solid;
-                background-color: #2e2d28;
-                z-index: -1;
-                box-sizing: border-box;
-                opacity: 0.8;
             }
 
             .xpRestanteText .job {
                 display: flex;
                 margin: 8px;
                 align-items: center;
+                background: rgba(120, 120, 120, 0.25);
+                box-shadow: #505050 1px 1px 2px;
+                padding: 3px;
+                border-radius: 5px;
             }
 
             .xpRestanteText img {
@@ -72,14 +56,16 @@ export class Jobsxp extends Mod{
                 text-align: right;
             }
 
+            .xpRestanteText .description .text{
+                font-weight: 600;
+            }
+
             .xpRestanteText .name {
                 font-family: berlin_sans_fb_demibold;
                 font-size: 1.6em;
                 color: #ced0bb;
                 text-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
             }
-
-
             `;
             this.wGame.document.getElementsByTagName('head')[0].appendChild(jobsxpbarCss);
 
