@@ -303,7 +303,8 @@
           "show-resources" : "Affichage des ressources",
           "health-bar": "Afficher la barres de vie",
           "monster-tooltip": "Affiche infos des groupes de monstres",
-          "auto-harvest": "Fenêtre d'auto-récolte"
+          "auto-harvest": "Fenêtre d'auto-récolte",
+          "dtmap": "Carte des ressources"
         }
       },
       "notifications": {

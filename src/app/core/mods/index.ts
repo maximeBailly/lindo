@@ -21,3 +21,4 @@ export { AutoPass } from "app/core/mods/autopass/autopass";
 export { ShowResources } from "app/core/mods/showResources/showResources";
 export { FixeGui } from "app/core/mods/fixeGui/fixeGui";
 export { SalesSummary } from "app/core/mods/salesSummary/salesSummary";
+export { DtMap } from "app/core/mods/dtMap/dtMap";
