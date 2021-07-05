@@ -69,18 +69,23 @@
         "features": {
           "title": "Fonctionnalités",
           "general": {
+            "menu": {
+              "general": "Général",
+              "fight": "Combat",
+              "group": "Groupe",
+              "job": "Métier"
+            },
             "header": "Général",
             "disable-inactivity": "Prolonger le délai maximum d'inactivité",
             "estimator": "Estimation des dégats des sorts en combat",
             "health-bar": "Barres de vie en-dessous des combatants",
-            "health-bar-shortcut": "Raccourcis pour les barres de vie",
             "jobsxp": "Activer l'affichage de l'xp a obtenir pour monter de niveau (métier)",
             "hide-mount": "Cacher les montures pendant les combats",
             "fightchronometer": "Afficher le chronomètre de combats",
             "zaapsearchfilter" : "Afficher le filtre de recherche de zaap",
-            "show-resources" : "Affiches les ressources de la carte",
-            "show-resources-shortcut" : "Raccourcis pour l'affichage des ressources",
             "harvest-indicator" : "Barres de temps sous les récoltes",
+            "monster-tooltip": "Affiche les informations des groupes de monstres sur la carte",
+            "show-resources" : "Affiches les ressources de la carte",
             "party-member-on-map" : "Ajoute un indicateur pour savoir si les membres d'un groupe sont sur la même carte"
           },
           "groups": {
@@ -110,7 +115,8 @@
           "interface": "Interface",
           "spell": "Sorts",
           "inventory": "Inventaire",
-          "other": "Divers"
+          "other": "Divers",
+          "mod": "Mods"
         }
       },
       "bug-report": {
@@ -227,6 +233,10 @@
         },
         "jobsxp": {
           "text": " XP manquant<br>avant le niveau "
+        },
+        "monstertooltip": {
+          "level": "Rang",
+          "group": "Groupe"
         }
       },
       "general": {
@@ -297,6 +307,12 @@
         "spells": {
           "header": "Sorts",
           "slot": "Emplacement {{x}}"
+        },
+        "mods": {
+          "show-resources" : "Affichage des ressources",
+          "health-bar": "Afficher la barres de vie",
+          "monster-tooltip": "Affiche infos des groupes de monstres",
+          "dtmap": "Carte des ressources"
         }
       },
       "notifications": {

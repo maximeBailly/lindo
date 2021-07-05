@@ -27,12 +27,12 @@ export class ShowResources extends Mod {
                     flex-direction: row;
                     align-items: flex-end;
                     position: absolute;
-                    top: 0;    
-                    border: 1px solid #3e3e3e;
-                    border-top: none;
-                    background-color: rgba(0, 0, 0, 0.55);
+                    top: 0;
                     border-radius: 0 0 5px 5px;
                     padding: 4px 2px;
+                    background: rgba(120, 120, 120, 0.25);
+                    box-shadow: #505050 1px 1px 2px;
+                    text-shadow: 0 0 5px #000;
                 }
 
                 .resource-item {
@@ -42,7 +42,13 @@ export class ShowResources extends Mod {
                     padding: 0 5px;
                     margin: 0 5px;
                     border-radius: 4px;
-                    background-color: #00000033;
+                    background-color: #6b6b6b33;
+                    font-weight: bold;
+                    font-size: 12px;
+                }
+
+                .resource-item div {
+                    height: 35px;
                 }
 
                 .resource-item p {
@@ -61,12 +67,7 @@ export class ShowResources extends Mod {
 
             this.on(this.wGame.dofus.connectionManager, 'MapComplementaryInformationsDataMessage', (e: any) => this.onMapComplementaryInfos(e.interactiveElements, e.statedElements));
             this.on(this.wGame.dofus.connectionManager, 'StatedElementUpdatedMessage', ({statedElement}) => this.onStatedElementUpdated(statedElement));
-            this.on(this.wGame.dofus.connectionManager, 'GameFightStartingMessage', () => {
-                if (this.enabled) {
-                    this.isHide = true;
-                    this.toggle();
-                }
-            });
+            this.on(this.wGame.dofus.connectionManager, 'GameFightStartingMessage', () => { if (this.enabled) this.toggle(); });
 
             setTimeout(() => this.loadMapInfoOnStart(), 100);
         }
@@ -76,17 +77,17 @@ export class ShowResources extends Mod {
      * Use to load map informations when player activate mod in game
      */
     private loadMapInfoOnStart() {
-        // Get data from isoEngine
-        const interactives = this.wGame.isoEngine.mapRenderer.interactiveElements;
-        const stated = this.wGame.isoEngine.mapRenderer.statedElements;
-
-        if (interactives != null && stated != null) {
+        if (this.wGame.isoEngine.mapRenderer.isReady) {
             const interactiveElements = [];
             const statedElements = [];
 
+            // Get data from isoEngine
+            const interactives = this.wGame.isoEngine.mapRenderer.interactiveElements;
+            const stated = this.wGame.isoEngine.mapRenderer.statedElements;
+
             // Push data in Array
             for(const i in interactives) { interactiveElements.push(interactives[i]); }
-            for(const s in stated) { statedElements.push(stated[s]); }
+            for(const s in stated) { statedElements.push({elementId: stated[s].id, elementState: stated[s].state}); }
 
             this.loadDataTry = 0;
             this.onMapComplementaryInfos(interactiveElements, statedElements);
@@ -152,7 +153,8 @@ export class ShowResources extends Mod {
     }
 
     private create() {
-        if (this.isHide) this.isHide = false;
+        this.isHide = false;
+        this.enabled = true;
 
         this.resourcesBox = this.wGame.document.createElement('div');
         this.resourcesBox.id = 'resourcesBox';
@@ -187,7 +189,8 @@ export class ShowResources extends Mod {
     }
 
     private clearHtml() {
-        if (this.resourcesBox && this.resourcesBox.parentElement) this.resourcesBox.parentElement.removeChild(this.resourcesBox);
+        this.isHide = true;
+        if (this.resourcesBox) this.resourcesBox.remove();
     }
 
     private clear() {
@@ -197,6 +200,7 @@ export class ShowResources extends Mod {
 
     public reset(): void {
         super.reset();
+        if (this.wGame.document.getElementById('resourcesBoxCss')) this.wGame.document.getElementById('resourcesBoxCss').remove();
         this.clear();
     }  
 }

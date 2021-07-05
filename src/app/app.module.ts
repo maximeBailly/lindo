@@ -48,6 +48,7 @@ import {ShortcutsInterfaceComponent} from "./windows/main/menus/shortcuts/interf
 import {ShortcutsInventoryComponent} from "./windows/main/menus/shortcuts/inventory/inventory.component";
 import {ShortcutsOtherComponent} from "./windows/main/menus/shortcuts/other/other.component";
 import {ShortcutsSpellComponent} from "./windows/main/menus/shortcuts/spell/spell.component";
+import {ShortcutsModComponent} from "./windows/main/menus/shortcuts/mod/mod.component";
 
 export const createTranslateLoader = (http: HttpClient): TranslateHttpLoader => new TranslateHttpLoader(http, '../../locale/', '.json');
 
@@ -105,6 +106,7 @@ registerLocaleData(localeTr);
         ShortcutsInventoryComponent,
         ShortcutsOtherComponent,
         ShortcutsSpellComponent,
+        ShortcutsModComponent,
         InputComponent
     ],
     entryComponents: [
