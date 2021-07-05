@@ -39,23 +39,42 @@ export class WindowAutoHarvest {
         autoHarvestCss.id = 'autoHarvestCss';
         autoHarvestCss.innerHTML = `
             #autoHarvestWindow {
-                min-width: 500px; min-height: 400px;
-                left: calc(50vw - 250px);
-                top: calc(50vh - 200px);
+                min-width: 650px; min-height: 450px;
+                left: calc(50vw - 325px);
+                top: calc(50vh - 225px);
             }
-            #atohvt-content {
+            .atohvt-body {
+                display: flex;
                 flex-direction: column;
+            }
+            #atohvt-container {
+                display: flex;
+                flex: 2;
+            }
+            #atohvt-listBox {
+                flex: 1 1 0%;
+            }
+            #atohvt-resources, #atohvt-parameters, #atohvt-way {
+                flex: 2 1 0%;
+                flex-direction: column;
+            }
+            #atohvt-timeContainer {
+                display: grid;
+                grid-template-columns: 50% 50%;
+                grid-template-rows: auto;
+                grid-template-areas: "text text""min max";
+                margin: 0 10px;
             }
             .atohvt-cb-container {
                 display: none;
                 flex-wrap: wrap;
-                margin-bottom: 10px;
+                margin-top: 10px;
             }
             .atohvt-show {
                 display: flex !important;
             }
             .atohvt-checkBox {
-                min-width: 190px;
+                min-width: 150px;
             }
             .atohvt-btn {
                 width: 100%;
@@ -99,22 +118,49 @@ export class WindowAutoHarvest {
      */
     private createWindow() {
         // Create container
-        this.window.createDofusWindow('Récolte Automatique', 'autoHarvestWindow').makeDraggable().hide();
-        const contentBox: HTMLDivElement = this.windowHelper.WindowContent.createContentBox('atohvt-content');
-        const btnContainer: HTMLDivElement = this.wGame.document.createElement('div');
-        btnContainer.style.display = 'flex';
+        this.window.createDofusWindow('Récolte Automatique', 'autoHarvestWindow', {customClassBody: 'atohvt-body'}).makeDraggable().hide();
+
+        // Create container
+        const container: HTMLDivElement = this.wGame.document.createElement('div');
+        container.id = 'atohvt-container';
+
+        // Create menu list
+        const listBox: HTMLDivElement = this.windowHelper.WindowContent.createContentBox('atohvt-listBox');
+        const list: HTMLDivElement = this.windowHelper.getComponentHelper.List.createList('atohvt-list',
+            [{id: '0', text: 'Ressources'},{id: '1', text: 'Chemin'},{id: '2', text: 'Parametres'}]);
+
+        // Create resources box
+        const resources: HTMLDivElement = this.windowHelper.WindowContent.createContentBox('atohvt-resources');
+        const select: HTMLDivElement = this.inputHelper.Select.createSelect('atohvt-select', selectChoices);
+        select.style.margin = '0 5px';
+
+        // Create way box
+        const way: HTMLDivElement = this.windowHelper.WindowContent.createContentBox('atohvt-way');
+        way.style.display = 'none';
+
+        // Create parameter box
+        const parameters: HTMLDivElement = this.windowHelper.WindowContent.createContentBox('atohvt-parameters');
+        parameters.style.display = 'none';
         const timeContainer: HTMLDivElement = this.wGame.document.createElement('div');
-        timeContainer.style.display = 'flex';
-        timeContainer.style.margin = '0 0 5px 4px';
+        timeContainer.id = 'atohvt-timeContainer';
+        const timeText: HTMLDivElement = this.wGame.document.createElement('div');
+        timeText.innerText = 'Réaparition (Temps avant récolte)';
+        timeText.style.gridArea = 'text';
+
+        // Create btn container
+        const btnContainer: HTMLDivElement = this.windowHelper.WindowContent.createContentBox('atohvt-btn-container');
+        btnContainer.style.display = 'flex';
+
 
         // Create input
-        const select: HTMLDivElement = this.inputHelper.Select.createSelect('atohvt-select', selectChoices);
         const minTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-minTime', {
-            label: 'Temps min : ', value: this.autoHarvest.minTime ? this.autoHarvest.minTime.toString() : '1', inputClassName: 'atohvt-minTime'
+            label: 'Min : ', value: this.autoHarvest.minTime ? this.autoHarvest.minTime.toString() : '1', inputClassName: 'atohvt-minTime'
         });
+        minTimeInput.style.gridArea = 'min';
         const maxTimeInput: HTMLDivElement = this.inputHelper.Input.createNumberInput('atohvt-maxTime', {
-            label: 'Temps max : ', value: this.autoHarvest.maxTime ? this.autoHarvest.maxTime.toString() : '2'
+            label: 'Max : ', value: this.autoHarvest.maxTime ? this.autoHarvest.maxTime.toString() : '2'
         });
+        maxTimeInput.style.gridArea = 'max';
         const start: HTMLDivElement = this.inputHelper.Button.createTextButton('atohvt-start-btn', {
             text: 'Lancer', color: ButtonColor.PRIMARY, customClassName: 'atohvt-btn'
         });
@@ -125,16 +171,29 @@ export class WindowAutoHarvest {
 
 
         // Add input to container
+        listBox.append(list);
         btnContainer.append(start, stop);
-        timeContainer.append(minTimeInput, maxTimeInput);
-        contentBox.append(timeContainer, btnContainer);
-        this.window.addContent(select)
-                   .addContent(contentBox);
+        timeContainer.append(timeText, minTimeInput, maxTimeInput);
+        // Add input container to box container
+        container.append(listBox, resources, way, parameters);
+        resources.append(select);
+        parameters.append(timeContainer);
+
+        this.window.addContent(container)
+                   .addContent(btnContainer);
 
         // Add all checkBox foreach skill
-        this.createCheckBox(contentBox);
+        this.createCheckBox(resources);
 
-
+        // Add event to list
+        this.windowHelper.getComponentHelper.List.addListEvent(list, (choice) => {
+            resources.style.display = 'none';
+            parameters.style.display = 'none';
+            way.style.display = 'none';
+            if (choice.id == 0) resources.style.display = 'flex';
+            if (choice.id == 1) way.style.display = 'flex';
+            if (choice.id == 2) parameters.style.display = 'flex';
+        });
         // Add event to input
         this.inputHelper.Button.addButtonEvent(start, () => {
             this.autoHarvest.startAutoHarvest();
@@ -151,14 +210,14 @@ export class WindowAutoHarvest {
             this.inputHelper.Button.changeButtonColor(start, ButtonColor.PRIMARY);
         });
         this.inputHelper.Select.addSelectEvent(select, (choice) => {
-            contentBox.getElementsByClassName('atohvt-show')[0].classList.remove('atohvt-show');
+            resources.getElementsByClassName('atohvt-show')[0].classList.remove('atohvt-show');
             this.wGame.document.getElementById('atohvt-job-' + choice.id).classList.add('atohvt-show');
         });
         this.inputHelper.Input.addInputEvent(minTimeInput, (time) => {
-            this.autoHarvest.minTime = time;
+            this.autoHarvest.minTime = +time;
         });
         this.inputHelper.Input.addInputEvent(maxTimeInput, (time) => {
-            this.autoHarvest.maxTime = time;
+            this.autoHarvest.maxTime = +time;
         });
 
         this.select = select;
@@ -166,18 +225,17 @@ export class WindowAutoHarvest {
 
     /**
      * Create checkbox for each skill and push to an categories container
-     * @param contentBox The global container
+     * @param resourceBox The global container
      */
-    private createCheckBox(contentBox: HTMLDivElement) {
+    private createCheckBox(resourceBox: HTMLDivElement) {
         selectChoices.forEach((choices) => {
             // Create checkbox container
-            const checkBoxContainer: HTMLDivElement = this.wGame.document.createElement('div');
-            checkBoxContainer.id = 'atohvt-job-' + choices.id;
-            checkBoxContainer.className = 'atohvt-cb-container';
+            
+            const checkBoxContainer: HTMLDivElement = this.windowHelper.WindowContent.createScrollableContent('atohvt-job-' + choices.id, 'atohvt-cb-container');
             if (choices.ticked) checkBoxContainer.classList.add('atohvt-show');
 
-            // Insert container in contentBox
-            contentBox.insertAdjacentElement('afterbegin', checkBoxContainer);
+            // Insert container in resourceBox
+            resourceBox.insertAdjacentElement('beforeend', checkBoxContainer);
 
             // Get all skill for the specified "jobId"
             const elmntSkill: Array<any> = elementsSkillList.filter((e) => e.jobId == +choices.id);
